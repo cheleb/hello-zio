@@ -18,6 +18,8 @@ package hellozio
 
 import zio._
 
+import zio.console.Console
+
 import userrepo.UserRepo
 import hellozio.userrepo.DBError
 import hellozio.logging.Logging
@@ -37,14 +39,17 @@ object ManagedDependecies extends zio.App {
         }
       }
 
-    val fullRepo: ZLayer.NoDeps[Nothing, UserRepo] = connectionLayer >>> postgresLayer
+    val horizontal: ZLayer.NoDeps[Nothing, Logging] = Console.live >>>
+      Logging.consoleLogger
+
+    val fullRepo: ZLayer.NoDeps[Nothing, UserRepo with Logging] = connectionLayer >>> horizontal ++ postgresLayer
 
     val user2: User = User(UserId(123), "Tommy")
 
-    val makeUser: ZIO[UserRepo, DBError, Unit] = for {
-      //_ <- Logging.info(s"inserting user") // ZIO[Logging, Nothing, Unit]
-      _ <- UserRepo.createUser(user2) // ZIO[UserRepo, DBError, Unit]
-      //_ <- Logging.info(s"user inserted")  // ZIO[Logging, Nothing, Unit]
+    val makeUser: ZIO[UserRepo with Logging, DBError, Unit] = for {
+      _ <- Logging.info(s"inserting user") // ZIO[Logging, Nothing, Unit]
+      _ <- UserRepo.createUser(user2)      // ZIO[UserRepo, DBError, Unit]
+      _ <- Logging.info(s"user inserted")  // ZIO[Logging, Nothing, Unit]
     } yield ()
 
     makeUser.provideLayer(fullRepo).fold(_ => 1, _ => 0)
