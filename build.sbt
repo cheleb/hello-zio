@@ -10,6 +10,7 @@ lazy val `hello-zio` =
     .settings(
       libraryDependencies ++= Seq(
         library.zio,
+        library.zioSagaCore,
         library.scalaCheck % Test,
         library.scalaTest  % Test,
       )
@@ -22,13 +23,15 @@ lazy val `hello-zio` =
 lazy val library =
   new {
     object Version {
-      val scalaCheck = "1.14.2"
-      val scalaTest  = "3.1.0"
-      val zio = "1.0.0-RC18"
+      val scalaCheck = "1.14.3"
+      val scalaTest  = "3.1.1"
+      val zio = "1.0.0-RC18-2"
+      val zioSagaCore = "0.2.0+7-c1504753"
     }
     val scalaCheck = "org.scalacheck" %% "scalacheck" % Version.scalaCheck
     val scalaTest  = "org.scalatest"  %% "scalatest"  % Version.scalaTest
     val zio        = "dev.zio" %% "zio" % Version.zio
+    val zioSagaCore = "com.vladkopanev" %% "zio-saga-core" % Version.zioSagaCore
   }
 
 // *****************************************************************************
