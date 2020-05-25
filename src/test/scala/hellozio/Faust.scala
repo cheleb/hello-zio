@@ -16,8 +16,59 @@
 
 package hellozio
 
-object Faust extends App {
+class IO[+A](val unsafeInterpret: () => A) { self =>
 
-  val list = List("1", "2", "3")
+  def map[B](f: A => B): IO[B] = flatMap(f.andThen(IO.effect(_)))
 
+  def flatMap[B](f: A => IO[B]): IO[B] =
+    IO.effect(f(self.unsafeInterpret()).unsafeInterpret())
+
+}
+
+object IO {
+  def effect[A](eff: => A) = new IO(() => eff)
+}
+
+object MyIOApp extends App {
+
+  def putStrLn(msg: String): IO[Unit] = IO.effect(println(msg))
+  def getStrLn: IO[String]            = IO.effect(scala.io.StdIn.readLine())
+
+  val prg = for {
+    _    <- putStrLn("Hello, what's your name?")
+    name <- getStrLn
+    _    <- putStrLn(s"Hello, $name")
+  } yield name
+
+  prg.unsafeInterpret()
+
+}
+
+trait Console[F[_]] {
+  def putStrLn(msg: String): F[Unit]
+  def getStrLn: F[String]
+}
+
+object Console {
+  def apply[F[_]](implicit f: Console[F]) = f
+}
+
+object MyIOConsoleApp {
+  implicit val console = new Console[IO] {
+
+    override def putStrLn(msg: String): IO[Unit] =
+      IO.effect(println(msg))
+
+    override def getStrLn: IO[String] =
+      IO.effect(scala.io.StdIn.readLine())
+
+  }
+/*
+  def program[F[_]: Console]: F[String] =
+    for {
+      _    <- Console[F].putStrLn("What is your name?")
+      name <- Console[F].getStrLn
+      _    <- Console[F].putStrLn(s"Hello, $name")
+    } yield name
+*/
 }

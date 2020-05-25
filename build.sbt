@@ -24,8 +24,8 @@ lazy val library =
   new {
     object Version {
       val scalaCheck = "1.14.3"
-      val scalaTest  = "3.1.1"
-      val zio = "1.0.0-RC18-2"
+      val scalaTest  = "3.1.2"
+      val zio = "1.0.0-RC19-2"
       val zioSagaCore = "0.2.0+7-c1504753"
     }
     val scalaCheck = "org.scalacheck" %% "scalacheck" % Version.scalaCheck
@@ -45,7 +45,7 @@ lazy val settings =
 lazy val commonSettings =
   Seq(
     // scalaVersion from .travis.yml via sbt-travisci
-    // scalaVersion := "2.13.1",
+    scalaVersion := "2.13.2",
     organization := "io.metabookmarks",
     organizationName := "Olivier NOUGUIER",
     startYear := Some(2020),
