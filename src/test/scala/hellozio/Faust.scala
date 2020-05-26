@@ -63,12 +63,12 @@ object MyIOConsoleApp {
       IO.effect(scala.io.StdIn.readLine())
 
   }
-/*
+  /*
   def program[F[_]: Console]: F[String] =
     for {
       _    <- Console[F].putStrLn("What is your name?")
       name <- Console[F].getStrLn
       _    <- Console[F].putStrLn(s"Hello, $name")
     } yield name
-*/
+ */
 }
