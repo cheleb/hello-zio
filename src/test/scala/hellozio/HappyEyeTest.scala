@@ -17,11 +17,11 @@
 package hellozio
 
 import zio.console._
-import zio.URIO
-import zio.ZIO
+import zio._
 import zio.duration.Duration
 import zio.duration._
 import zio.clock.Clock
+import zio.ExitCode
 
 object HappyEyeTest extends zio.App {
 
@@ -30,7 +30,7 @@ object HappyEyeTest extends zio.App {
   def log(msg: String): URIO[Console, Unit] =
     ZIO
       .succeed(System.currentTimeMillis())
-      .map(now => (start - now) / 1000L)
+      .map(now => (now - start) / 1000L)
       .flatMap(elapsed => putStrLn(s"$elapsed $msg"))
 
   def printSleepPrint(msg: String, delay: Duration): URIO[Console with Clock, Unit] =
@@ -41,20 +41,19 @@ object HappyEyeTest extends zio.App {
       new RuntimeException(s"FAIL: msg")
     )
 
-  def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] =
-    HappyEye
-      .happyEyeball(
-        List(
-          printSleepPrint("task1", 10.second),
-          printSleepFail("task2", 1.second),
-          printSleepPrint("task3", 6.second),
-          printSleepPrint("task4", 4.second)
-        ),
-        2.second
-      )
+  def run(args: List[String]): URIO[ZEnv, ExitCode] =
+    HappyEyeballs(
+      List(
+        printSleepPrint("task1", 10.second),
+        printSleepFail("task2", 1.second),
+        printSleepPrint("task3", 6.second),
+        printSleepPrint("task4", 4.second)
+      ),
+      2.second
+    )
       .tap(v => log(s"WON: $v"))
       .tapError(err => log(s"ERROR: $err"))
-      .fold(_ => 1, _ => 0)
+      .exitCode
       .untraced
 
 }

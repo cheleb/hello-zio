@@ -8,8 +8,7 @@ lazy val `hello-zio` =
     .enablePlugins(AutomateHeaderPlugin)
     .settings(settings)
     .settings(
-      libraryDependencies ++= Seq(
-        library.zio,
+      libraryDependencies ++= library.zio ++ Seq(
         library.zioSagaCore,
         library.scalaCheck % Test,
         library.scalaTest  % Test,
@@ -24,13 +23,13 @@ lazy val library =
   new {
     object Version {
       val scalaCheck = "1.14.3"
-      val scalaTest  = "3.1.2"
-      val zio = "1.0.0-RC20"
+      val scalaTest  = "3.2.0"
+      val zio = "1.0.1"
       val zioSagaCore = "0.2.0+7-c1504753"
     }
     val scalaCheck = "org.scalacheck" %% "scalacheck" % Version.scalaCheck
     val scalaTest  = "org.scalatest"  %% "scalatest"  % Version.scalaTest
-    val zio        = "dev.zio" %% "zio" % Version.zio
+    val zio        = Seq("zio", "zio-test").map("dev.zio" %% _ % Version.zio)
     val zioSagaCore = "com.vladkopanev" %% "zio-saga-core" % Version.zioSagaCore
   }
 
@@ -45,7 +44,7 @@ lazy val settings =
 lazy val commonSettings =
   Seq(
     // scalaVersion from .travis.yml via sbt-travisci
-    scalaVersion := "2.13.2",
+    scalaVersion := "2.13.3",
     organization := "io.metabookmarks",
     organizationName := "Olivier NOUGUIER",
     startYear := Some(2020),

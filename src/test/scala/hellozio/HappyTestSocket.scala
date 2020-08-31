@@ -16,7 +16,7 @@
 
 package hellozio
 
-import zio.ZIO
+import zio._
 import zio.console._
 import zio.duration._
 import zio.blocking._
@@ -24,16 +24,16 @@ import java.net.InetAddress
 import java.net.Socket
 
 object HappyTestSocket extends zio.App {
-  def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] =
+  def run(args: List[String]): URIO[ZEnv, ExitCode] =
     effectBlocking(InetAddress.getAllByName("debian.org").toList)
       .map { addresses =>
         addresses.map { address =>
           effectBlocking(new Socket(address, 443)).tap(a => putStrLn(s"$a"))
         }
       }
-      .flatMap(tasks => HappyEye.happyEyeballRelease(tasks, 2.seconds, closeSocket))
-      .tap(o => putStrLn("" + o.getRemoteSocketAddress()))
-      .fold(_ => 1, _ => 0)
+      .flatMap(tasks => ReleasableHappyEyeballs(tasks, 2.seconds, closeSocket))
+      .tap(o => putStrLn("Connect: " + o.getRemoteSocketAddress()))
+      .exitCode
 
   def closeSocket(socket: Socket) = effectBlocking(socket.close()).catchAll(_ => ZIO.unit)
 }

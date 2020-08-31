@@ -70,5 +70,5 @@ object MyIOConsoleApp {
       name <- Console[F].getStrLn
       _    <- Console[F].putStrLn(s"Hello, $name")
     } yield name
- */
+   */
 }

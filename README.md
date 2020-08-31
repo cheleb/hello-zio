@@ -2,6 +2,15 @@
 
 Welcome to hello-zio!
 
+## 
+1. [Functional effect with ZIO](https://aleksandarskrbic.github.io/functional-effects-with-zio/)
+
+2. [Getting started with ZIO](https://www.youtube.com/watch?v=6A1SA5Be9qw)
+
+3. [EyeBall](https://www.youtube.com/watch?v=4gyAoyYwWnI)
+
+4. [gRPC and ZIO](https://www.youtube.com/watch?v=XTkhxRTH1nE&t=23s)
+
 ## Contribution policy ##
 
 Contributions via GitHub pull requests are gladly accepted from their original author. Along with
