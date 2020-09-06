@@ -21,9 +21,6 @@ import zio.ZIO
 import zio.duration.Duration
 import zio.clock.Clock
 import zio.Queue
-//import zio.blocking._
-//import java.net.InetAddress
-//import java.net.Socket
 
 object HappyEyeballs {
 

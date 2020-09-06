@@ -16,5 +16,5 @@
 
 package hellozio
 
-case class UserId(id: Int) extends AnyVal
-case class User(id: UserId, name: String)
+final case class UserId(id: Int) extends AnyVal
+final case class User(id: UserId, name: String)
