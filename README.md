@@ -3,15 +3,19 @@
 Welcome to hello-zio!
 
 ## 
-0. [Basis](http://cloudmark.github.io/A-Journey-To-Zio/#:~:text=ZIO%20is%20more%20than%20just,libraries%20in%20the%20functional%20ecosystem.)
+* [Reader Monad](https://medium.com/@alexander.zaidel/composing-functions-with-reader-monad-f3e471958e2a)
 
-1. [Functional effect with ZIO](https://aleksandarskrbic.github.io/functional-effects-with-zio/)
+* [Basis](http://cloudmark.github.io/A-Journey-To-Zio/#:~:text=ZIO%20is%20more%20than%20just,libraries%20in%20the%20functional%20ecosystem.)
 
-2. [Getting started with ZIO](https://www.youtube.com/watch?v=6A1SA5Be9qw)
+* [Functional effect with ZIO](https://aleksandarskrbic.github.io/functional-effects-with-zio/)
 
-3. [EyeBall](https://www.youtube.com/watch?v=4gyAoyYwWnI)
+* [Getting started with ZIO](https://www.youtube.com/watch?v=6A1SA5Be9qw)
 
-4. [gRPC and ZIO](https://www.youtube.com/watch?v=XTkhxRTH1nE&t=23s)
+* [EyeBall](https://www.youtube.com/watch?v=4gyAoyYwWnI)
+
+* [gRPC and ZIO](https://www.youtube.com/watch?v=XTkhxRTH1nE&t=23s)
+
+* [Aspect](https://www.youtube.com/watch?v=gcqWdNwNEPg)
 
 ## Contribution policy ##
 

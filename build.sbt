@@ -8,11 +8,11 @@ lazy val `hello-zio` =
     .enablePlugins(AutomateHeaderPlugin)
     .settings(settings)
     .settings(
-      libraryDependencies ++= library.zio ++ library.zioGrpc ++
+      libraryDependencies ++= library.zio ++ library.zioConfig ++ library.zioGrpc ++
         Seq(
-        library.zioSagaCore,
-        library.scalaCheck % Test,
-        library.scalaTest  % Test,
+          library.zioSagaCore,
+          library.scalaCheck % Test,
+          library.scalaTest  % Test,
       )
     )
 
@@ -23,16 +23,18 @@ lazy val `hello-zio` =
 lazy val library =
   new {
     object Version {
-      val scalaCheck = "1.14.3"
-      val scalaTest  = "3.2.0"
-      val zio = "1.0.1"
+      val scalaCheck = "1.15.1"
+      val scalaTest  = "3.2.3"
+      val zio = "1.0.3"
       val zioSagaCore = "0.2.0+7-c1504753"
-      val grpcVersion = "1.31.1"
+      val grpcVersion = "1.33.1"
+      val zioConfig = "1.0.0-RC29"
     }
     val scalaCheck = "org.scalacheck" %% "scalacheck" % Version.scalaCheck
     val scalaTest  = "org.scalatest"  %% "scalatest"  % Version.scalaTest
     val zio        = Seq("zio", "zio-test").map("dev.zio" %% _ % Version.zio)
     val zioSagaCore = "com.vladkopanev" %% "zio-saga-core" % Version.zioSagaCore
+    val zioConfig = Seq("zio-config", "zio-config-magnolia", "zio-config-typesafe").map(d=>"dev.zio" %% d % Version.zioConfig)
     val zioGrpc = Seq(
     "com.thesamet.scalapb" %% "scalapb-runtime-grpc" % scalapb.compiler.Version.scalapbVersion,
     "io.grpc" % "grpc-netty" % Version.grpcVersion
