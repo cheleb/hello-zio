@@ -18,7 +18,6 @@ package zionomicon.chap2
 
 import zio._
 
-
 import zio.console._
 import zio.clock.Clock
 
