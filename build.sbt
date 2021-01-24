@@ -30,7 +30,7 @@ lazy val `hello-zio` =
 lazy val library =
   new {
     object Version {
-      val scalaCheck = "1.15.1"
+      val scalaCheck = "1.15.2"
       val scalaTest  = "3.2.3"
       val zio = "1.0.3"
       val zioSagaCore = "0.2.0+7-c1504753"
@@ -48,7 +48,7 @@ lazy val library =
       "com.thesamet.scalapb" %% "scalapb-runtime-grpc" % scalapb.compiler.Version.scalapbVersion,
       "io.grpc" % "grpc-netty" % Version.grpcVersion
     )
-    val zioStream = "dev.zio" %% "zio-streams" % "1.0.3"
+    val zioStream = "dev.zio" %% "zio-streams" % "1.0.4"
     val zioKafka = "dev.zio" %% "zio-kafka"   % "0.13.0"
     val zioPrelude = "dev.zio" %% "zio-prelude"   % "1.0.0-RC1"
     val zioPrometheus = "dev.zio" %% "zio-metrics-prometheus" % "1.0.1"
