@@ -17,19 +17,30 @@
 package hellozio
 
 import zio._
+import zio.blocking._
 import zio.console._
-import zio.duration._
 
-object RetryApp extends App {
+object Simple extends App {
 
-  val program = ZIO
-      .fromTry(throw new RuntimeException("poum"))
-      .tapError(e => putStrLn(e.getMessage()))
-      .retry(Schedule.exponential(100.milliseconds) && Schedule.recurWhile[Throwable] {
-        case e => true
-      })
-      .timeout(5.seconds) *> putStrLn("...Plaf")
+  trait R1
+  trait R2 //extends R1
+  class A
 
-  def run(args: List[String]): zio.URIO[zio.ZEnv, ExitCode] =
-    program.exitCode
+  class E1
+  class E2 //extends E1
+
+  def zio1: ZIO[Console, E1, A]  = ???
+  def zio2: ZIO[Blocking, E2, A] = ???
+  def boom                       = ZIO.fail("Aille").sandbox
+  def dummy                      = ZIO(1)
+
+  val z = zio1 *> zio2
+
+  val program = for {
+    _ <- zio2
+    _ <- zio1
+  } yield ()
+
+  override def run(args: List[String]): URIO[ZEnv, ExitCode] = ??? //program.exitCode
+
 }

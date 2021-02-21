@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-package hellozio
+package zionomicon.chap05
 
 import zio._
 import zio.console._
+
 import zio.duration._
+object SimpleConcur extends App {
 
-object RetryApp extends App {
+  private val program = for {
+    res <- ZIO.succeed(1).zipPar(ZIO.sleep(100.millis) *> ZIO.succeed(2))
+    _   <- putStrLn(s"$res")
+  } yield ()
 
-  val program = ZIO
-      .fromTry(throw new RuntimeException("poum"))
-      .tapError(e => putStrLn(e.getMessage()))
-      .retry(Schedule.exponential(100.milliseconds) && Schedule.recurWhile[Throwable] {
-        case e => true
-      })
-      .timeout(5.seconds) *> putStrLn("...Plaf")
+  override def run(args: List[String]): URIO[ZEnv, ExitCode] = program.exitCode
 
-  def run(args: List[String]): zio.URIO[zio.ZEnv, ExitCode] =
-    program.exitCode
 }

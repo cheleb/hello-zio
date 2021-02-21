@@ -14,22 +14,16 @@
  * limitations under the License.
  */
 
-package hellozio
+package zionomicon.chap08
 
 import zio._
-import zio.console._
-import zio.duration._
 
-object RetryApp extends App {
+object Forking extends App {
 
-  val program = ZIO
-      .fromTry(throw new RuntimeException("poum"))
-      .tapError(e => putStrLn(e.getMessage()))
-      .retry(Schedule.exponential(100.milliseconds) && Schedule.recurWhile[Throwable] {
-        case e => true
-      })
-      .timeout(5.seconds) *> putStrLn("...Plaf")
+  val grandChild: UIO[Unit] = ZIO.effectTotal(println("Hello, World!"))
+  val child                 = grandChild.fork
+  val program               = child.fork *> ZIO.never
 
-  def run(args: List[String]): zio.URIO[zio.ZEnv, ExitCode] =
-    program.exitCode
+  override def run(args: List[String]): URIO[ZEnv, ExitCode] = program.exitCode
+
 }

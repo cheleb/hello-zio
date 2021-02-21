@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-package hellozio
-
 import zio._
-import zio.console._
-import zio.duration._
 
-object RetryApp extends App {
-
-  val program = ZIO
-      .fromTry(throw new RuntimeException("poum"))
-      .tapError(e => putStrLn(e.getMessage()))
-      .retry(Schedule.exponential(100.milliseconds) && Schedule.recurWhile[Throwable] {
-        case e => true
-      })
-      .timeout(5.seconds) *> putStrLn("...Plaf")
-
-  def run(args: List[String]): zio.URIO[zio.ZEnv, ExitCode] =
-    program.exitCode
+package object logging { // Module definition
+  type Logging = Has[Logging.Service]
+  object Logging {
+    // Service definition
+    trait Service {
+      def logLine(line: String): UIO[Unit]
+    }
+    // Module implementation
+    val console: ZLayer[Any, Nothing, Logging] = ZLayer.succeed {
+      new Service {
+        def logLine(line: String): UIO[Unit] =
+          UIO.effectTotal(println(line))
+      }
+    }
+  }
+  // Accessor methods
+  def logLine(line: String): URIO[Logging, Unit] = ZIO.accessM(_.get.logLine(line))
 }
