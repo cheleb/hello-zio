@@ -17,12 +17,56 @@
 package zionomicon.chap08
 
 import zio._
+import zio.duration._
 
 object Forking extends App {
 
   val grandChild: UIO[Unit] = ZIO.effectTotal(println("Hello, World!"))
-  val child                 = grandChild.fork
+  val child                 = grandChild.fork.flatMap(fiber => fiber.join)
   val program               = child.fork *> ZIO.never
+
+  override def run(args: List[String]): URIO[ZEnv, ExitCode] = program.exitCode
+
+}
+
+object ForkingTwice extends App {
+
+  val effect = for {
+    _ <- ZIO.effectTotal(println("Heart beat")).delay(1 second).forever.fork
+    _ <- ZIO.effectTotal(println("Hard work..."))
+  } yield ()
+
+  val program = for {
+    fiber <- effect.fork
+    _     <- ZIO.effectTotal(println("Doing ")).delay(5.second)
+    _     <- fiber.join
+  } yield ()
+
+  override def run(args: List[String]): URIO[ZEnv, ExitCode] = program.exitCode
+
+}
+
+object ForkingInScopeTwice extends App {
+
+  def effect(scope: ZScope[Exit[Any, Any]]) =
+    for {
+      _ <- ZIO.effectTotal(println("Heart beat")).delay(1 second).forever.forkIn(scope)
+      _ <- ZIO.effectTotal(println("Hard work..."))
+    } yield ()
+
+  def module =
+    for {
+      fiber  <- ZIO.scopeWith(scope => effect(scope).fork)
+      _      <- ZIO.effectTotal(println("Hard another work...")).delay(5.seconds)
+      result <- fiber.join
+
+    } yield result
+
+  val program = for {
+    fiber <- module.fork
+    _     <- ZIO.effectTotal(println("Running another module entirely ")).delay(10.second)
+    _     <- fiber.join
+  } yield ()
 
   override def run(args: List[String]): URIO[ZEnv, ExitCode] = program.exitCode
 

@@ -23,8 +23,10 @@ import zio.config.typesafe.TypesafeConfig
 import zio.config.getConfig
 import com.typesafe.config.ConfigFactory
 import zio.config.magnolia.DeriveConfigDescriptor.descriptor
+import java.net.URI
 
-final case class HelloConfig(port: Int)
+final case class Test(me: String, uri: URI)
+final case class HelloConfig(port: Int, test: Test)
 
 object ConfigApp extends App {
 
@@ -34,7 +36,7 @@ object ConfigApp extends App {
 
   private val program = for {
     conf <- getConfig[HelloConfig]
-    _    <- putStrLn(f"Hello on ${conf.port}%d")
+    _    <- putStrLn(f"Hello on ${conf.port}%d ${conf.test} ")
   } yield ()
 
   override def run(args: List[String]): URIO[ZEnv, ExitCode] =

@@ -30,12 +30,12 @@ lazy val `hello-zio` =
 lazy val library =
   new {
     object Version {
-      val scalaCheck = "1.15.2"
-      val scalaTest  = "3.2.3"
-      val zio = "1.0.4-2"
+      val scalaCheck = "1.15.3"
+      val scalaTest  = "3.2.6"
+      val zio = "1.0.5"
       val zioSagaCore = "0.2.0+7-c1504753"
-      val grpcVersion = "1.35.0"
-      val zioConfig = "1.0.0"
+      val grpcVersion = "1.36.0"
+      val zioConfig = "1.0.2"
     }
     val scalaCheck = "org.scalacheck" %% "scalacheck" % Version.scalaCheck
     val scalaTest  = "org.scalatest"  %% "scalatest"  % Version.scalaTest
@@ -52,7 +52,7 @@ lazy val library =
     val zioKafka = "dev.zio" %% "zio-kafka"   % "0.14.0"
     val zioPrelude = "dev.zio" %% "zio-prelude"   % "1.0.0-RC1"
     val zioPrometheus = "dev.zio" %% "zio-metrics-prometheus" % "1.0.1"
-    val jacksonDatabind = "com.fasterxml.jackson.core" % "jackson-databind" % "2.12.1"
+    val jacksonDatabind = "com.fasterxml.jackson.core" % "jackson-databind" % "2.12.2"
   }
 
 // *****************************************************************************
@@ -67,7 +67,7 @@ lazy val settings =
 lazy val commonSettings =
   Seq(
     // scalaVersion from .travis.yml via sbt-travisci
-     scalaVersion := "2.13.4",
+     scalaVersion := "2.13.5",
     //scalaVersion := "3.0.0-RC1",
     organization := "io.metabookmarks",
     organizationName := "Olivier NOUGUIER",
