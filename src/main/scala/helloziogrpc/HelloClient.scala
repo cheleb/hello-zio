@@ -39,7 +39,7 @@ object ExampleClient extends zio.App {
   def myAppLogic: ZIO[GreeterClient with Console, Status, Unit] =
     for {
       r <- GreeterClient.sayHello(HelloRequest("World"))
-      _ <- putStrLn(r.message)
+      _ <- putStrLn(r.message).orDie
     } yield ()
 
   final def run(args: List[String]) =

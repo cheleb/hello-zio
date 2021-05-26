@@ -202,7 +202,7 @@ object NumberGuessing extends App {
   private lazy val readIntAndRetry: URIO[Console, Int] =
     readInt
       .orElse(
-        putStrErr("Not a valid integer...")
+        putStrErr("Not a valid integer...").orDie
         *> readIntAndRetry
       )
 
@@ -212,7 +212,7 @@ object NumberGuessing extends App {
         readIntAndRetry //.flatMap(str => ZIO.fromTry(Try(str.toInt))).retry(Schedule.forever)
       _ <-
         if (guess < secret)
-          putStrLn("To low") *> makeAGuess(secret)
+          putStrLn("Too low") *> makeAGuess(secret)
         else if (guess > secret)
           putStrLn("To High") *> makeAGuess(secret)
         else

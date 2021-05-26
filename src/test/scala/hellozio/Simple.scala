@@ -17,30 +17,26 @@
 package hellozio
 
 import zio._
-import zio.blocking._
+
 import zio.console._
 
 object Simple extends App {
 
-  trait R1
-  trait R2 //extends R1
-  class A
-
-  class E1
-  class E2 //extends E1
-
-  def zio1: ZIO[Console, E1, A]  = ???
-  def zio2: ZIO[Blocking, E2, A] = ???
-  def boom                       = ZIO.fail("Aille").sandbox
-  def dummy                      = ZIO(1)
+  def zio1  = ZIO.succeed(Some(false))
+  def zio2  = ZIO.succeed(Some(true))
+  def boom  = ZIO.fail("Aille").sandbox
+  def dummy = ZIO(1)
 
   val z = zio1 *> zio2
 
   val program = for {
-    _ <- zio2
-    _ <- zio1
+    res <- zio1.zip(zio2) map {
+      case (Some(a), Some(b)) if a && b => None
+      case _                            => Some(true)
+    }
+    _ <- putStrLn(s" $res one two")
   } yield ()
 
-  override def run(args: List[String]): URIO[ZEnv, ExitCode] = ??? //program.exitCode
+  override def run(args: List[String]): URIO[ZEnv, ExitCode] = program.exitCode
 
 }

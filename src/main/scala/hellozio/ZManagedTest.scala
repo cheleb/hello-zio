@@ -14,18 +14,26 @@
  * limitations under the License.
  */
 
-package zionomicon.chap3
+package hellozio
 
 import zio._
 import zio.console._
-import zio.clock._
-import zio.duration._
 
-object TimerApp extends App {
+object ZManagedTest extends App {
 
-  val goShopping: ZIO[Console with Clock, Nothing, Unit] =
-    putStrLn("Going shopping!").delay(1.hour).orDie
+  val program = for {
+    za <-
+      ZManaged
+        .fromAutoCloseable(ZIO(new AutoCloseable {
 
-  def run(args: List[String]): zio.URIO[zio.ZEnv, ExitCode] = goShopping.exitCode
+          override def close(): Unit = println("ooo")
+
+        }))
+        .map(_ => 1)
+    zb <- ZManaged.succeed(1)
+  } yield za + zb
+
+  override def run(args: List[String]): URIO[ZEnv, ExitCode] =
+    program.use(res => putStrLn(s"res: $res")).exitCode
 
 }

@@ -14,18 +14,29 @@
  * limitations under the License.
  */
 
-package zionomicon.chap3
+object AStar extends App {
 
-import zio._
-import zio.console._
-import zio.clock._
-import zio.duration._
+  val matrix = Array.ofDim[Int](10, 10)
 
-object TimerApp extends App {
+  matrix(4) = Array(0, 0, 1, 1, 1, 1, 1, 1, 1, 0)
 
-  val goShopping: ZIO[Console with Clock, Nothing, Unit] =
-    putStrLn("Going shopping!").delay(1.hour).orDie
+  printMatrix(matrix)
 
-  def run(args: List[String]): zio.URIO[zio.ZEnv, ExitCode] = goShopping.exitCode
+  def aStar(start: (Int, Int), end: (Int, Int)): Seq[(Int, Int)] =
+    ???
+
+  def printMatrix(matrix: Array[Array[Int]]): Unit =
+    matrix.zipWithIndex.foreach {
+      case (line, i) =>
+        print(s"$i: ")
+        println(
+          line
+            .map {
+              case 0 => '.'
+              case 1 => 'O'
+            }
+            .mkString("")
+        )
+    }
 
 }

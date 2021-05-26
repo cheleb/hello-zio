@@ -31,7 +31,7 @@ object HappyEyeTest extends zio.App {
     ZIO
       .succeed(System.currentTimeMillis())
       .map(now => (now - start) / 1000L)
-      .flatMap(elapsed => putStrLn(s"$elapsed $msg"))
+      .flatMap(elapsed => putStrLn(s"$elapsed $msg").orDie)
 
   def printSleepPrint(msg: String, delay: Duration): URIO[Console with Clock, Unit] =
     log(s"START: $msg") *> ZIO.sleep(delay) *> log(s"END: $msg")

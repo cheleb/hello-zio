@@ -23,7 +23,7 @@ case class Winner(players: List[Player], price: Int)
 
 object SecondPrice extends App {
 
-  def players = ZIO(List(Player("A", List(30, 100))))
+  def players: Task[List[Player]] = ZIO(List(Player("A", List(30, 100))))
 
   /*
   def enroll(player: Player, winner: Ref[Winner]) = for {
