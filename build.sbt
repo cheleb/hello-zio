@@ -31,12 +31,12 @@ lazy val `hello-zio` =
 lazy val library =
   new {
     object Version {
-      val scalaCheck = "1.15.3"
+      val scalaCheck = "1.15.4"
       val scalaTest  = "3.2.9"
-      val zio = "1.0.8"
+      val zio = "1.0.9"
       val zioSagaCore = "0.2.0+7-c1504753"
       val grpcVersion = "1.37.0"
-      val zioConfig = "1.0.5"
+      val zioConfig = "1.0.6"
       val zioSchema = "0.0.5"
     }
     val scalaCheck = "org.scalacheck" %% "scalacheck" % Version.scalaCheck

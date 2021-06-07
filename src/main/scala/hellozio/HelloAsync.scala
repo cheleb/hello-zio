@@ -38,9 +38,9 @@ object HelloAsync extends App {
     }
 
   private val program = for {
-    _    <- console.putStrLn("Hello async")
+    _ <- console.putStrLn("Hello async")
     user <- getUserById(1)
-    _    <- console.putStrLn(s"Hi $user")
+    _ <- console.putStrLn(s"Hi $user")
   } yield ()
 
   override def run(args: List[String]): URIO[ZEnv, ExitCode] = program.exitCode
