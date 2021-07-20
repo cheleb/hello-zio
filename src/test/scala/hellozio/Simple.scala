@@ -19,6 +19,8 @@ package hellozio
 import zio._
 
 import zio.console._
+import zio.blocking._
+import java.io.PrintWriter
 
 object Simple extends App {
 
@@ -35,6 +37,13 @@ object Simple extends App {
       case _                            => Some(true)
     }
     _ <- putStrLn(s" $res one two")
+
+    _ <-
+      ZManaged
+        .fromAutoCloseable(effectBlocking(new PrintWriter("/tmp/zozo")))
+        .use(w => effectBlocking(w.append("zozo")))
+        .ignore
+
   } yield ()
 
   override def run(args: List[String]): URIO[ZEnv, ExitCode] = program.exitCode

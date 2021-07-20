@@ -18,6 +18,7 @@ package hellozio
 
 import zio._
 import zio.console._
+
 import zio.duration._
 
 object RetryApp extends App {
@@ -28,7 +29,7 @@ object RetryApp extends App {
       .retry(Schedule.exponential(100.milliseconds) && Schedule.recurWhile[Throwable] {
         case e => true
       })
-      .timeout(5.seconds) *> putStrLn("...Plaf")
+      .timeout(1.seconds) *> putStrLn("...Plaf")
 
   def run(args: List[String]): zio.URIO[zio.ZEnv, ExitCode] =
     program.exitCode

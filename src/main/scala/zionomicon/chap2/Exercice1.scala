@@ -20,6 +20,7 @@ import zio._
 
 import zio.console._
 import zio.clock.Clock
+import zio.duration._
 
 import java.io.IOException
 
@@ -219,12 +220,13 @@ object NumberGuessing extends App {
           putStr("Won !")
     } yield guess
 
-  private val program = for {
+  private val program: ZIO[Random with Console with Clock with Clock, Throwable, Unit] = for {
     secret <- nextIntBounded(100)
     _      <- putStrLn("Guess a number?")
-    _      <- makeAGuess(secret)
+    res    <- makeAGuess(secret).timeout(5.seconds)
+
   } yield ()
 
   def run(args: List[String]) =
-    program.exitCode
+    program.disconnect.timeout(2.second).exitCode
 }

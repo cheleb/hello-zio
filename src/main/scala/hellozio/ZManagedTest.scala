@@ -21,19 +21,32 @@ import zio.console._
 
 object ZManagedTest extends App {
 
-  val program = for {
+  val managed = for {
     za <-
       ZManaged
         .fromAutoCloseable(ZIO(new AutoCloseable {
 
-          override def close(): Unit = println("ooo")
+          override def close(): Unit = println("ooo 1")
 
         }))
         .map(_ => 1)
-    zb <- ZManaged.succeed(1)
+    zb <-
+      ZManaged
+        .fromAutoCloseable(ZIO(new AutoCloseable {
+
+          override def close(): Unit = println("ooo 2")
+
+        }))
+        .map(_ => 2)
   } yield za + zb
 
+  val program = for {
+    _ <- putStrLn("Start")
+    _ <- managed.use(res => putStrLn(s"res: $res"))
+    _ <- putStrLn("End")
+  } yield ()
+
   override def run(args: List[String]): URIO[ZEnv, ExitCode] =
-    program.use(res => putStrLn(s"res: $res")).exitCode
+    program.exitCode
 
 }

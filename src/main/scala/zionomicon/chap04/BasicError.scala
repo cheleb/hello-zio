@@ -29,7 +29,8 @@ object BasicError extends App {
 
 object CatchAllCauseExercice extends App {
 
-  def failWithMessage(string: String) = ZIO.succeed(throw new Error(string)).sandbox
+  def failWithMessage(string: String) =
+    ZIO(throw new RuntimeException(string)).ignore
 
   override def run(args: List[String]): URIO[ZEnv, ExitCode] = failWithMessage("ouille").exitCode
 

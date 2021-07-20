@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-package hellozio
+package zionomicon.chap13
 
-object NoZio extends App {
+import zio._
 
-  class MyExeption(message: String, cause: Throwable) extends RuntimeException(message, cause) {
+object HubDemo extends App {
 
-    def this(message: String) = this(message, null)
-
-  }
-
-  throw new MyExeption("ouillle")
+  override def run(args: List[String]): URIO[ZEnv, ExitCode] = ???
 
 }
