@@ -17,7 +17,7 @@
 package hellozio
 
 import zio._
-import zio.console._
+import zio.Console._
 
 object ZManagedTest extends App {
 

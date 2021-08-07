@@ -17,8 +17,7 @@
 package zionomicon.chap07
 
 import zio._
-import zio.console._
-import zio.duration._
+import zio.Console._
 
 object Concur extends App {
 

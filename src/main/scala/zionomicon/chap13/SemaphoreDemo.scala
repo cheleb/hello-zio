@@ -17,19 +17,18 @@
 package zionomicon.chap13
 
 import zio._
-import zio.clock._
-import zio.console._
-import zio.duration._
+
+import zio.Console._
 
 object SemaphoreDemo extends App {
 
-  def queryDatabase(connections: Ref[Int]): URIO[Console with Clock, Unit] =
+  def queryDatabase(connections: Ref[Int]): ZIO[Has[Console] with Has[Clock], Nothing, Unit] =
     connections
       .updateAndGet(_ + 1)
       .flatMap { n =>
-        console.putStrLn(s"Aquiring connection, now $n simultaneous connections") *>
+        putStrLn(s"Aquiring connection, now $n simultaneous connections") *>
         ZIO.sleep(1.second) *>
-        console.putStrLn(s"Closing connection, now ${n - 1} simultaneous connections")
+        putStrLn(s"Closing connection, now ${n - 1} simultaneous connections")
       }
       .orDie *> connections.update(_ - 1)
 

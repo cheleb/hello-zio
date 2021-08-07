@@ -42,6 +42,7 @@ object OpticsDemo extends App {
 
   val rating: Lens[Manager, Rating] =
     Lens(_.rating, rating => manager => manager.copy(rating = rating))
+
   val upvote: Lens[Rating, Int] = Lens(_.value, value => rating => rating.copy(value = value))
 
   val myOptic = manager >>> rating >>> upvote

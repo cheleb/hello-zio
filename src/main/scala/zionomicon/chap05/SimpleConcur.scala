@@ -17,9 +17,8 @@
 package zionomicon.chap05
 
 import zio._
-import zio.console._
+import zio.Console._
 
-import zio.duration._
 object SimpleConcur extends App {
 
   private val program = for {

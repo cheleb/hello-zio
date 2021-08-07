@@ -17,19 +17,16 @@
 package hellozio
 
 import zio._
-import zio.console._
-
-import zio.duration._
 
 object RetryApp extends App {
 
   val program = ZIO
       .fromTry(throw new RuntimeException("poum"))
-      .tapError(e => putStrLn(e.getMessage()))
+      .tapError(e => Console.putStrLn(e.getMessage()))
       .retry(Schedule.exponential(100.milliseconds) && Schedule.recurWhile[Throwable] {
         case e => true
       })
-      .timeout(1.seconds) *> putStrLn("...Plaf")
+      .timeout(1.seconds) *> Console.putStrLn("...Plaf")
 
   def run(args: List[String]): zio.URIO[zio.ZEnv, ExitCode] =
     program.exitCode

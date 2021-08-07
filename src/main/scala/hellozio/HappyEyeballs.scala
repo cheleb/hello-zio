@@ -18,16 +18,13 @@ package hellozio
 
 import zio.ZIO
 
-import zio.duration.Duration
-import zio.clock.Clock
-import zio.Queue
-
+import zio._
 object HappyEyeballs {
 
   def apply[R, T](
       tasks: List[ZIO[R, Throwable, T]],
       delay: Duration
-  ): ZIO[R with Clock, Throwable, T] =
+  ): ZIO[R with Has[Clock], Throwable, T] =
     tasks match {
       case Nil         => ZIO.fail(new IllegalArgumentException("No tasks"))
       case task :: Nil => task

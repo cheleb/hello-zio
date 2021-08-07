@@ -17,10 +17,10 @@
 package helloziogrpc
 
 import io.grpc.ManagedChannelBuilder
-import zio.console._
+import zio.Console._
 import scalapb.zio_grpc.ZManagedChannel
 
-import zio.Layer
+import zio._
 
 import io.grpc.examples.helloworld.helloworld.ZioHelloworld.GreeterClient
 import io.grpc.examples.helloworld.helloworld.HelloRequest
@@ -36,7 +36,7 @@ object ExampleClient extends zio.App {
       )
     )
 
-  def myAppLogic: ZIO[GreeterClient with Console, Status, Unit] =
+  def myAppLogic: ZIO[GreeterClient with Has[Console], Status, Unit] =
     for {
       r <- GreeterClient.sayHello(HelloRequest("World"))
       _ <- putStrLn(r.message).orDie

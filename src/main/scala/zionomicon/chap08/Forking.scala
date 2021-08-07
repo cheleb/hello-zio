@@ -17,7 +17,6 @@
 package zionomicon.chap08
 
 import zio._
-import zio.duration._
 
 object Forking extends App {
 

@@ -17,7 +17,7 @@
 package zionomicon.chap12
 
 import zio._
-import zio.console._
+import zio.Console._
 
 object QueueDemo extends App {
 

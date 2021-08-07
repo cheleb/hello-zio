@@ -17,6 +17,7 @@
 package zionomicon.chap10
 
 import zio._
+import zio.Console._
 
 final case class Tree[+A](head: A, tail: List[Tree[A]])
 
@@ -46,7 +47,7 @@ object FiberRefTest extends App {
     _      <- fiber1.join
     _      <- fiber2.join
     log    <- ref.get
-    _      <- console.putStrLn(log.toString)
+    _      <- putStrLn(log.toString)
   } yield ()
 
   override def run(args: List[String]): URIO[ZEnv, ExitCode] = program.exitCode

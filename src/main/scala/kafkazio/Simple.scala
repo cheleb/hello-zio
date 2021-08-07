@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
+/*
 package kafkazio
 
 import zio._
-import zio.console._
+import zio.Console._
 
-import zio.duration._
 import zio.kafka.consumer._
-import zio.blocking.Blocking, zio.clock.Clock
+
 import zio.kafka.consumer.{ Consumer, ConsumerSettings }
 import zio.kafka.serde._
 import zio.kafka.producer.Producer
@@ -39,7 +39,7 @@ object Simple extends App {
 
   val producerSettings: ProducerSettings = ProducerSettings(List("localhost:9092"))
 
-  lazy val consumerManaged: ZManaged[Clock with Blocking, Throwable, Consumer.Service] =
+  lazy val consumerManaged: ZManaged[Clock, Throwable, Consumer.Service] =
     Consumer.make(consumerSettings)
 
   lazy val consumerL =
@@ -76,8 +76,9 @@ object Simple extends App {
       putStrLn(s"Received message ${key}: ${value}")
     // Perform an effect with the received message
   }
-   */
+ */
   override def run(args: List[String]): URIO[ZEnv, ExitCode] =
     consume.exitCode
 
 }
+ */

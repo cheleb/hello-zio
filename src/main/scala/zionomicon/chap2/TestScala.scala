@@ -22,7 +22,9 @@ object TestScala extends App {
 
   val o2 = Option.empty[Int]
 
-  o1.flatMap(a => o2.map(b => a + b))
+  o1.flatMap { a =>
+    o2.map(b => a + b)
+  }
 
   val l3 = for {
     a <- o1

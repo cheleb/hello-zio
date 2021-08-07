@@ -20,7 +20,7 @@ import io.grpc.Status
 import scalapb.zio_grpc.ServerMain
 import scalapb.zio_grpc.ServiceList
 import zio.{ ZEnv, ZIO }
-import zio.console._
+import zio.Console._
 
 import io.grpc.examples.helloworld.helloworld.ZioHelloworld.ZGreeter
 import io.grpc.examples.helloworld.helloworld.{ HelloReply, HelloRequest }
@@ -32,7 +32,8 @@ object GreeterImpl extends ZGreeter[ZEnv, Any] {
     putStrLn(s"Got request: ${request.name}").orDie *>
     ZIO.succeed(HelloReply(s"Hello, ${request.name}"))
 }
-
+/*
 object HelloWorldServer extends ServerMain {
   def services: ServiceList[zio.ZEnv] = ServiceList.add(GreeterImpl)
 }
+ */

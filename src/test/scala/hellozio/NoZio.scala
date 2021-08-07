@@ -18,12 +18,24 @@ package hellozio
 
 object NoZio extends App {
 
-  class MyExeption(message: String, cause: Throwable) extends RuntimeException(message, cause) {
+  val o1 = Option(1)
+  val o2 = Option(2)
+  val o3 = Option(3)
 
-    def this(message: String) = this(message, null)
+  val six = o1.flatMap(one =>
+    o2.flatMap { two =>
+      ooo = 10
+      o3.map(_ + ooo).map(three => one + two + three)
+    }
+  )
 
-  }
+  for {
+    one <- o1
+    two <- o2
+    ooo = 10
+    three <- o3.map(_ + ooo)
+  } yield one + two + three
 
-  throw new MyExeption("ouillle")
+  println(three)
 
 }

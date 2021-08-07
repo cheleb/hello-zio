@@ -17,21 +17,18 @@
 package hellozio
 
 import zio._
-import zio.console._
+import zio.Console._
 
 import java.io.File
 import java.io.PrintWriter
 import java.io.Writer
-import zio.duration._
-
-import zio.clock.Clock
 
 object EnsuringSample extends App {
 
   def run(args: List[String]) =
     myAppLogic.exitCode
 
-  private def deleteTempFile(file: File): URIO[Console with Clock, Any] =
+  private def deleteTempFile(file: File): ZIO[Has[Console] with Has[Clock], Nothing, AnyVal] =
     if (file.getName contentEquals "tmp.txt")
       (putStrLn(s"del ${file.getName}") *> URIO.sleep(2 seconds) *> ZIO.effect {
         file.delete()

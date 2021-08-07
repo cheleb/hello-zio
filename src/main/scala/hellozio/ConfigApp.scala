@@ -18,7 +18,7 @@ package hellozio
 
 import zio._
 
-import zio.console._
+import zio.Console._
 import zio.config.typesafe.TypesafeConfig
 import zio.config.getConfig
 import com.typesafe.config.ConfigFactory

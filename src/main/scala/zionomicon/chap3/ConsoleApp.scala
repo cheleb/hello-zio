@@ -17,7 +17,7 @@
 package zionomicon.chap3
 
 import zio._
-import zio.console._
+import zio.Console._
 object ConsoleApp extends App {
 
   val greet = for {

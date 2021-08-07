@@ -18,9 +18,9 @@ package zionomicon.chap2
 
 import zio._
 
-import zio.console._
-import zio.clock.Clock
-import zio.duration._
+import zio.Console._
+import zio.Clock
+import zio.Duration._
 
 import java.io.IOException
 
@@ -105,7 +105,7 @@ object Exercice1 {
 
   // 13
   lazy val currentTimeZIO: ZIO[Any, Nothing, Long] =
-    ZIO.effectTotal(System.currentTimeMillis())
+    ZIO.effectTotal(java.lang.System.currentTimeMillis())
 
   // 14
   def getCacheValue(
@@ -145,7 +145,7 @@ object Exercice1 {
   // 19
   def readUntil(
       acceptInput: String => Boolean
-  ): ZIO[Console, IOException, String] =
+  ): ZIO[Has[Console], IOException, String] =
     for {
       str <- getStrLn.repeatUntil(acceptInput)
     } yield str
@@ -191,7 +191,7 @@ object HelloHuman extends App {
 }
 
 // 18
-import zio.random._
+import zio.Random._
 
 object NumberGuessing extends App {
 
@@ -200,14 +200,14 @@ object NumberGuessing extends App {
     int  <- ZIO.effect(line.toInt)
   } yield int
 
-  private lazy val readIntAndRetry: URIO[Console, Int] =
+  private lazy val readIntAndRetry: URIO[Has[Console], Int] =
     readInt
       .orElse(
         putStrErr("Not a valid integer...").orDie
         *> readIntAndRetry
       )
 
-  private def makeAGuess(secret: Int): ZIO[Console with Clock, Throwable, Int] =
+  private def makeAGuess(secret: Int): ZIO[Has[Console] with Has[Clock], Throwable, Int] =
     for {
       guess <-
         readIntAndRetry //.flatMap(str => ZIO.fromTry(Try(str.toInt))).retry(Schedule.forever)
@@ -220,7 +220,7 @@ object NumberGuessing extends App {
           putStr("Won !")
     } yield guess
 
-  private val program: ZIO[Random with Console with Clock with Clock, Throwable, Unit] = for {
+  private val program: ZIO[Has[Random] with Has[Console] with Has[Clock], Throwable, Unit] = for {
     secret <- nextIntBounded(100)
     _      <- putStrLn("Guess a number?")
     res    <- makeAGuess(secret).timeout(5.seconds)

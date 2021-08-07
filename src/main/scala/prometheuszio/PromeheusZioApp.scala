@@ -21,14 +21,14 @@ import zio.metrics.prometheus._
 import zio.metrics.prometheus.helpers._
 import zio.metrics.prometheus.exporters.Exporters
 
-import zio.console._
+import zio.Console._
 
 object PromeheusZioApp extends App {
 
   val prometheusLayer = Registry.live ++ Exporters.live
 
   val testCounter = for {
-    _ <- putStrLn("Helo")
+    _ <- printLine("Helo")
     c <- Counter("PrometheusTest", Array.empty[String])
     _ <- c.inc()
     _ <- c.inc(2.0)
