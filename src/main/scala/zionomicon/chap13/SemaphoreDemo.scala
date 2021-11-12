@@ -19,16 +19,17 @@ package zionomicon.chap13
 import zio._
 
 import zio.Console._
+import zio.ZIOAppDefault
 
-object SemaphoreDemo extends App {
+object SemaphoreDemo extends ZIOAppDefault {
 
-  def queryDatabase(connections: Ref[Int]): ZIO[Has[Console] with Has[Clock], Nothing, Unit] =
+  def queryDatabase(connections: Ref[Int]): ZIO[Console with Clock, Nothing, Unit] =
     connections
       .updateAndGet(_ + 1)
       .flatMap { n =>
-        putStrLn(s"Aquiring connection, now $n simultaneous connections") *>
+        printLine(s"Aquiring connection, now $n simultaneous connections") *>
         ZIO.sleep(1.second) *>
-        putStrLn(s"Closing connection, now ${n - 1} simultaneous connections")
+        printLine(s"Closing connection, now ${n - 1} simultaneous connections")
       }
       .orDie *> connections.update(_ - 1)
 
@@ -36,9 +37,10 @@ object SemaphoreDemo extends App {
     ref       <- Ref.make(0)
     semaphore <- Semaphore.make(4)
 
-    _ <- ZIO.foreachPar_(1 to 10)(_ => semaphore.withPermit(queryDatabase(ref)))
+    _ <- ZIO.foreachParDiscard(1 to 10)(_ => semaphore.withPermit(queryDatabase(ref)))
   } yield ()
 
-  override def run(args: List[String]): URIO[ZEnv, ExitCode] = program.exitCode
+  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
+    program.exitCode
 
 }

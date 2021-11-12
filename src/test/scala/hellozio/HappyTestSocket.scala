@@ -17,23 +17,23 @@
 package hellozio
 
 import zio._
-import zio.console._
-import zio.duration._
-import zio.blocking._
+import zio.Console._
 import java.net.InetAddress
 import java.net.Socket
 
-object HappyTestSocket extends zio.App {
-  def run(args: List[String]): URIO[ZEnv, ExitCode] =
-    effectBlocking(InetAddress.getAllByName("debian.org").toList)
+object HappyTestSocket extends ZIOAppDefault {
+
+  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
+    ZIO
+      .attemptBlocking(InetAddress.getAllByName("debian.org").toList)
       .map { addresses =>
         addresses.map { address =>
-          effectBlocking(new Socket(address, 443)).tap(a => putStrLn(s"$a"))
+          ZIO.attemptBlocking(new Socket(address, 443)).tap(a => printLine(s"$a"))
         }
       }
       .flatMap(tasks => ReleasableHappyEyeballs(tasks, 2.seconds, closeSocket))
-      .tap(o => putStrLn("Connect: " + o.getRemoteSocketAddress()))
+      .tap(o => printLine("Connect: " + o.getRemoteSocketAddress()))
       .exitCode
 
-  def closeSocket(socket: Socket) = effectBlocking(socket.close()).catchAll(_ => ZIO.unit)
+  def closeSocket(socket: Socket) = ZIO.attemptBlocking(socket.close()).catchAll(_ => ZIO.unit)
 }

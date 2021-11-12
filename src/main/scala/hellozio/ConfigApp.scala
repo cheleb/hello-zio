@@ -18,28 +18,24 @@ package hellozio
 
 import zio._
 
-import zio.Console._
-import zio.config.typesafe.TypesafeConfig
-import zio.config.getConfig
-import com.typesafe.config.ConfigFactory
 import zio.config.magnolia.DeriveConfigDescriptor.descriptor
 import java.net.URI
 
 final case class Test(me: String, uri: URI)
 final case class HelloConfig(port: Int, test: Test)
 
-object ConfigApp extends App {
+object ConfigApp extends ZIOAppDefault {
+
+  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] = ???
 
   private val configDescriptor = descriptor[HelloConfig]
-
+  /*
   private val config = TypesafeConfig.fromTypesafeConfig(ConfigFactory.load(), configDescriptor)
 
   private val program = for {
     conf <- getConfig[HelloConfig]
     _    <- putStrLn(f"Hello on ${conf.port}%d ${conf.test} ")
   } yield ()
-
-  override def run(args: List[String]): URIO[ZEnv, ExitCode] =
-    program.provideCustomLayer(config).exitCode
+   */
 
 }

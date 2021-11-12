@@ -18,14 +18,15 @@ package zionomicon.chap3
 
 import zio._
 import zio.Console._
-object ConsoleApp extends App {
+import zio.ZIOAppDefault
+object ConsoleApp extends ZIOAppDefault {
 
   val greet = for {
-    _    <- putStrLn("Who are you?")
-    name <- getStrLn
-    _    <- putStrLn(s"Hi $name")
+    _    <- printLine("Who are you?")
+    name <- readLine
+    _    <- printLine(s"Hi $name")
   } yield ()
 
-  override def run(args: List[String]): zio.URIO[zio.ZEnv, ExitCode] = greet.exitCode
+  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] = greet.exitCode
 
 }

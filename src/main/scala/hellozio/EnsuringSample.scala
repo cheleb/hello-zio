@@ -23,37 +23,37 @@ import java.io.File
 import java.io.PrintWriter
 import java.io.Writer
 
-object EnsuringSample extends App {
+object EnsuringSample extends ZIOAppDefault {
 
-  def run(args: List[String]) =
-    myAppLogic.exitCode
+  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
+    myAppLogic
 
-  private def deleteTempFile(file: File): ZIO[Has[Console] with Has[Clock], Nothing, AnyVal] =
+  private def deleteTempFile(file: File): ZIO[Console with Clock, Nothing, AnyVal] =
     if (file.getName contentEquals "tmp.txt")
-      (putStrLn(s"del ${file.getName}") *> URIO.sleep(2 seconds) *> ZIO.effect {
+      (printLine(s"del ${file.getName}") *> URIO.sleep(2 seconds) *> ZIO.attempt {
         file.delete()
       }).orDie
     else URIO.unit
 
   private def closeWriter(writer: Writer) =
-    (putStrLn("Closing writer") *> ZIO.effect(writer.close())).orDie
+    (printLine("Closing writer") *> ZIO.attempt(writer.close())).orDie
 
   private def newFile(filename: String) =
-    ZIO(new File(s"/tmp/$filename.txt")).bracket(deleteTempFile(_))
+    ZIO(new File(s"/tmp/$filename.txt")).acquireReleaseWith(deleteTempFile(_))
 
-  private def safeWriter(file: File) = ZIO(new PrintWriter(file)).bracket(closeWriter(_))
+  private def safeWriter(file: File) = ZIO(new PrintWriter(file)).acquireReleaseWith(closeWriter(_))
 
   private val myAppLogic = for {
-    _        <- putStrLn("Hello! What is the filename?")
-    filename <- getStrLn
+    _        <- printLine("Hello! What is the filename?")
+    filename <- readLine
     _ <- newFile(filename) { file =>
       for {
-        _    <- putStrLn("Hello! What is your name?")
-        name <- getStrLn
+        _    <- printLine("Hello! What is your name?")
+        name <- readLine
         _ <- safeWriter(file) { writer =>
           ZIO(writer.append(s"Hello $name\n")).repeatN(10)
         }
-        _ <- putStrLn(s"Hello, ${name}, welcome to ZIO!")
+        _ <- printLine(s"Hello, ${name}, welcome to ZIO!")
       } yield ()
     }
 

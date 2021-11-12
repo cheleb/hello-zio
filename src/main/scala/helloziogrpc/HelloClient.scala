@@ -27,7 +27,7 @@ import io.grpc.examples.helloworld.helloworld.HelloRequest
 import zio.ZIO
 import io.grpc.Status
 
-object ExampleClient extends zio.App {
+object ExampleClient extends zio.ZIOAppDefault {
 
   def clientLayer: Layer[Throwable, GreeterClient] =
     GreeterClient.live(
@@ -36,12 +36,12 @@ object ExampleClient extends zio.App {
       )
     )
 
-  def myAppLogic: ZIO[GreeterClient with Has[Console], Status, Unit] =
+  def myAppLogic: ZIO[GreeterClient with Console, Status, Unit] =
     for {
       r <- GreeterClient.sayHello(HelloRequest("World"))
-      _ <- putStrLn(r.message).orDie
+      _ <- printLine(r.message).orDie
     } yield ()
 
-  final def run(args: List[String]) =
+  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
     myAppLogic.provideCustomLayer(clientLayer).exitCode
 }

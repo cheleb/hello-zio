@@ -18,18 +18,20 @@ package zionomicon.chap12
 
 import zio._
 import zio.Console._
+import zio.ZIOAppDefault
 
-object QueueDemo extends App {
+object QueueDemo extends ZIOAppDefault {
 
   private val program = for {
     queue <- Queue.unbounded[Int]
-    _     <- queue.take.flatMap(i => putStrLn(s"Got $i")).forever.fork
+    _     <- queue.take.flatMap(i => printLine(s"Got $i")).forever.fork
     _     <- queue.offer(1)
     _     <- queue.offer(2)
     _     <- queue.offer(3)
-    _     <- putStrLn("Goobbye crual world.")
+    _     <- printLine("Goobbye crual world.")
   } yield ()
 
-  override def run(args: List[String]): URIO[ZEnv, ExitCode] = program.exitCode
+  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
+    program.exitCode
 
 }

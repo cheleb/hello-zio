@@ -16,22 +16,18 @@
 
 package hellozio
 
-import zio.console._
 import zio._
-import zio.duration.Duration
-import zio.duration._
-import zio.clock.Clock
-import zio.ExitCode
+import zio.Console._
 
-object HappyEyeTest extends zio.App {
+object HappyEyeTest extends ZIOAppDefault {
 
-  val start = System.currentTimeMillis()
+  val start = java.lang.System.currentTimeMillis()
 
   def log(msg: String): URIO[Console, Unit] =
     ZIO
-      .succeed(System.currentTimeMillis())
+      .succeed(java.lang.System.currentTimeMillis())
       .map(now => (now - start) / 1000L)
-      .flatMap(elapsed => putStrLn(s"$elapsed $msg").orDie)
+      .flatMap(elapsed => printLine(s"$elapsed $msg").orDie)
 
   def printSleepPrint(msg: String, delay: Duration): URIO[Console with Clock, Unit] =
     log(s"START: $msg") *> ZIO.sleep(delay) *> log(s"END: $msg")
@@ -41,7 +37,7 @@ object HappyEyeTest extends zio.App {
       new RuntimeException(s"FAIL: msg")
     )
 
-  def run(args: List[String]): URIO[ZEnv, ExitCode] =
+  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
     HappyEyeballs(
       List(
         printSleepPrint("task1", 10.second),
@@ -54,6 +50,5 @@ object HappyEyeTest extends zio.App {
       .tap(v => log(s"WON: $v"))
       .tapError(err => log(s"ERROR: $err"))
       .exitCode
-      .untraced
 
 }

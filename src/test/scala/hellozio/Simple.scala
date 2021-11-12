@@ -18,11 +18,11 @@ package hellozio
 
 import zio._
 
-import zio.console._
-import zio.blocking._
+import zio.Console._
+
 import java.io.PrintWriter
 
-object Simple extends App {
+object Simple extends ZIOAppDefault {
 
   def zio1  = ZIO.succeed(Some(false))
   def zio2  = ZIO.succeed(Some(true))
@@ -36,16 +36,16 @@ object Simple extends App {
       case (Some(a), Some(b)) if a && b => None
       case _                            => Some(true)
     }
-    _ <- putStrLn(s" $res one two")
+    _ <- printLine(s" $res one two")
 
     _ <-
       ZManaged
-        .fromAutoCloseable(effectBlocking(new PrintWriter("/tmp/zozo")))
-        .use(w => effectBlocking(w.append("zozo")))
+        .fromAutoCloseable(ZIO.attemptBlocking(new PrintWriter("/tmp/zozo")))
+        .use(w => ZIO.attemptBlocking(w.append("zozo")))
         .ignore
 
   } yield ()
 
-  override def run(args: List[String]): URIO[ZEnv, ExitCode] = program.exitCode
+  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] = program
 
 }

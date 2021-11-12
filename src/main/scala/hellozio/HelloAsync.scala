@@ -17,8 +17,9 @@
 package hellozio
 
 import zio._
+import zio.ZIOAppDefault
 
-object HelloAsync extends App {
+object HelloAsync extends ZIOAppDefault {
 
   def getUserByIdAsync(id: Int)(cb: Option[String] => Unit): Unit =
     new Thread {
@@ -30,7 +31,7 @@ object HelloAsync extends App {
     }.start()
 
   def getUserById(id: Int): ZIO[Any, None.type, String] =
-    ZIO.effectAsync { callback =>
+    ZIO.async { callback =>
       getUserByIdAsync(id) {
         case Some(name) => callback(ZIO.succeed(name))
         case None       => callback(ZIO.fail(None))
@@ -38,11 +39,11 @@ object HelloAsync extends App {
     }
 
   private val program = for {
-    _    <- Console.putStrLn("Hello async")
+    _    <- Console.printLine("Hello async")
     user <- getUserById(1)
-    _    <- Console.putStrLn(s"Hi $user")
+    _    <- Console.printLine(s"Hi $user")
   } yield ()
 
-  override def run(args: List[String]): URIO[ZEnv, ExitCode] = program.exitCode
+  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] = program
 
 }

@@ -41,7 +41,7 @@ object MemoMap {
                     resource = ZIO.uninterruptibleMask { restore =>
                       for {
                         env <- ZIO.environment[(R, ZManaged.ReleaseMap)]
-                        (r, outerReleaseMap) = env
+                        // FIXME        (r, outerReleaseMap) = env
                       } yield ???
                     }
                   } yield ???
