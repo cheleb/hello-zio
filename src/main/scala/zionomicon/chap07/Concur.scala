@@ -17,37 +17,38 @@
 package zionomicon.chap07
 
 import zio._
-import zio.console._
-import zio.duration._
+import zio.Console._
+import zio.ZIOAppDefault
 
-object Concur extends App {
+object Concur extends ZIOAppDefault {
 
   private val zio1 = ZIO.sleep(100 millis) *> ZIO(1)
   private val zio2 = ZIO.sleep(500 millis) *> ZIO(2)
 
   private val program = for {
     res <- zio1.raceEither(zio2)
-    _   <- putStrLn(s"Res: $res")
+    _   <- printLine(s"Res: $res")
   } yield ()
 
-  override def run(args: List[String]): URIO[ZEnv, ExitCode] = program.exitCode
+  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
+    program.exitCode
 
 }
 
-object ValidatePar extends App {
+object ValidatePar extends ZIOAppDefault {
 
   private def zioOf(i: Int) =
-    ZIO.sleep(100 * i millis) *> putStrLn(s"$i") *> (if (i % 3 == 0) ZIO.fail(i)
-                                                     else ZIO(i).orElseFail(0))
+    ZIO.sleep(100 * i millis) *> printLine(s"$i") *> (if (i % 3 == 0) ZIO.fail(i)
+                                                      else ZIO(i).orElseFail(0))
 
   private val program = for {
     res <- ZIO.validatePar(1 to 10)(zioOf)
-    _   <- putStrLn(s"Res: $res")
+    _   <- printLine(s"Res: $res")
   } yield ()
 
-  override def run(args: List[String]): URIO[ZEnv, ExitCode] =
+  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
     program.catchAll {
-      case e => putStrLnErr(e.toString())
+      case e => printLineError(e.toString())
     }.exitCode
 
 }

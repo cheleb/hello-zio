@@ -8,15 +8,18 @@ lazy val `hello-zio` =
     .enablePlugins(AutomateHeaderPlugin)
     .settings(settings)
     .settings(
-      libraryDependencies ++= library.zio ++ library.zioConfig ++ library.zioGrpc ++
+      libraryDependencies ++= library.zioConfig ++ library.zioGrpc ++
         Seq(
+          library.zio,
           library.zioSagaCore,
           library.zioStream,
-          library.zioKafka,
+      //    library.zioKafka,
           library.jacksonDatabind,
-          library.zioPrometheus,
+//          library.zioPrometheus,
           library.zioPrelude,
           library.zioSchema,
+          library.zhttp,
+          library.zioJson,
           library.zioTest         % Test,
           library.zioTestSBT      % Test,          
           library.scalaCheck % Test,
@@ -32,16 +35,20 @@ lazy val library =
   new {
     object Version {
       val scalaCheck = "1.15.4"
-      val scalaTest  = "3.2.9"
-      val zio = "1.0.9"
+      val scalaTest  = "3.2.10"
+      val zio = "2.0.0-RC1"
+      val zhttp = "2.0.0-RC1"
       val zioSagaCore = "0.2.0+7-c1504753"
-      val grpcVersion = "1.37.0"
-      val zioConfig = "1.0.6"
-      val zioSchema = "0.0.5"
+      val grpcVersion = "1.43.2"
+      val zioConfig = "2.0.0"
+      val zioSchema = "0.1.7"
+      val zioJson = "0.2.0-M2"
+
     }
     val scalaCheck = "org.scalacheck" %% "scalacheck" % Version.scalaCheck
     val scalaTest  = "org.scalatest"  %% "scalatest"  % Version.scalaTest
-    val zio        = Seq("zio", "zio-test").map("dev.zio" %% _ % Version.zio)
+    val zio        = "dev.zio"        %% "zio"        % Version.zio
+    val zhttp      = "io.d11"         %% "zhttp"      % Version.zhttp
     val zioTest    = "dev.zio"          %% "zio-test"     % Version.zio
     val zioTestSBT = "dev.zio"          %% "zio-test-sbt" % Version.zio
     val zioSagaCore = "com.vladkopanev" %% "zio-saga-core" % Version.zioSagaCore
@@ -51,11 +58,12 @@ lazy val library =
       "io.grpc" % "grpc-netty" % Version.grpcVersion
     )
     val zioStream = "dev.zio" %% "zio-streams" % Version.zio
-    val zioKafka = "dev.zio" %% "zio-kafka"   % "0.14.0"
+    val zioKafka = "dev.zio" %% "zio-kafka"   % "0.17.0"
     val zioPrelude = "dev.zio" %% "zio-prelude"   % "1.0.0-RC1"
     val zioSchema = "dev.zio" %% "zio-schema" % Version.zioSchema
-    val zioPrometheus = "dev.zio" %% "zio-metrics-prometheus" % "1.0.8"
-    val jacksonDatabind = "com.fasterxml.jackson.core" % "jackson-databind" % "2.12.3"
+    val zioJson = "dev.zio" %% "zio-json" % Version.zioJson
+    val zioPrometheus = "dev.zio" %% "zio-metrics-prometheus" % "1.0.13"
+    val jacksonDatabind = "com.fasterxml.jackson.core" % "jackson-databind" % "2.13.0"
   }
 
 // *****************************************************************************
@@ -70,7 +78,7 @@ lazy val settings =
 lazy val commonSettings =
   Seq(
     // scalaVersion from .travis.yml via sbt-travisci
-     scalaVersion := "2.13.6",
+     scalaVersion := "2.13.7",
     //scalaVersion := "3.0.0-RC1",
     organization := "io.metabookmarks",
     organizationName := "Olivier NOUGUIER",

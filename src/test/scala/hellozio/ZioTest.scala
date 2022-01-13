@@ -25,7 +25,7 @@ object ExampleSpec extends DefaultRunnableSpec {
       test("addition works") {
         assert(1 + 1)(equalTo(2))
       },
-      testM("ZIO.succeed succeeds with specified value") {
+      test("ZIO.succeed succeeds with specified value") {
         assertM(ZIO.succeed(1 + 1))(equalTo(2))
       }
     )

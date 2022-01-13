@@ -16,14 +16,10 @@
 
 package hellozio
 
-object NoZio extends App {
+import zio._
 
-  class MyExeption(message: String, cause: Throwable) extends RuntimeException(message, cause) {
+object ZioJsonDemo extends ZIOAppDefault {
 
-    def this(message: String) = this(message, null)
-
-  }
-
-  throw new MyExeption("ouillle")
+  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] = ???
 
 }

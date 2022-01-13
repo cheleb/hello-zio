@@ -18,10 +18,7 @@ package hellozio
 
 import zio.ZIO
 
-import zio.duration.Duration
-import zio.clock.Clock
-import zio.Queue
-
+import zio._
 object HappyEyeballs {
 
   def apply[R, T](

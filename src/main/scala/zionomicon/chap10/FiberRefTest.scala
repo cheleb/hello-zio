@@ -17,10 +17,12 @@
 package zionomicon.chap10
 
 import zio._
+import zio.Console._
+import zio.ZIOAppDefault
 
 final case class Tree[+A](head: A, tail: List[Tree[A]])
 
-object FiberRefTest extends App {
+object FiberRefTest extends ZIOAppDefault {
 
   type Log = Tree[Chunk[String]]
   val loggingRef: UIO[FiberRef[Log]] = FiberRef.make[Log](
@@ -46,9 +48,10 @@ object FiberRefTest extends App {
     _      <- fiber1.join
     _      <- fiber2.join
     log    <- ref.get
-    _      <- console.putStrLn(log.toString)
+    _      <- printLine(log.toString)
   } yield ()
 
-  override def run(args: List[String]): URIO[ZEnv, ExitCode] = program.exitCode
+  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
+    program.exitCode
 
 }

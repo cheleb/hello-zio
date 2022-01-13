@@ -17,7 +17,7 @@
 package hellozio
 
 import zio._
-import zio.clock.Clock
+
 import java.time.Duration
 import zio.Exit.Success
 import zio.Exit.Failure
@@ -36,8 +36,9 @@ object ReleasableHappyEyeballs {
           case Failure(cause) => ZIO.unit
         }
       }
-      _               <- HappyEyeballs(enqueingTasks, delay)
-      first :: others <- successful.takeAll
-      _               <- ZIO.foreach(others)(releaseExtra)
+      _     <- HappyEyeballs(enqueingTasks, delay)
+      chunk <- successful.takeAll
+      first :: others = chunk.toList
+      _ <- ZIO.foreach(others)(releaseExtra)
     } yield first
 }

@@ -18,30 +18,33 @@ package zionomicon.chap04
 
 import zio._
 import java.io.IOException
+import zio.ZIOAppDefault
 
-object BasicError extends App {
+object BasicError extends ZIOAppDefault {
 
-  private val program = ZIO.effect(1 / 0).sandbox
+  private val program = ZIO.attempt(1 / 0).sandbox
 
-  override def run(args: List[String]): URIO[ZEnv, ExitCode] = program.exitCode
+  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
+    program.exitCode
 
 }
 
-object CatchAllCauseExercice extends App {
+object CatchAllCauseExercice extends ZIOAppDefault {
 
   def failWithMessage(string: String) =
     ZIO(throw new RuntimeException(string)).ignore
 
-  override def run(args: List[String]): URIO[ZEnv, ExitCode] = failWithMessage("ouille").exitCode
+  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
+    failWithMessage("ouille").exitCode
 
   def recoverFromSomeDefects[R, E, A](zio: ZIO[R, E, A])(f: Throwable => Option[A]): ZIO[R, E, A] =
-    zio.foldCauseM(
+    zio.foldCauseZIO(
       ce =>
         ce.defects.flatMap(f) match {
           case Nil =>
             ce.failureOrCause match {
               case Left(value)  => ZIO.fail(value)
-              case Right(value) => ZIO.halt(ce)
+              case Right(value) => ZIO.failCause(ce)
             }
           case head :: _ => ZIO.succeed(head)
         },
@@ -50,17 +53,17 @@ object CatchAllCauseExercice extends App {
 
   def logFailures[R, E, A](zio: ZIO[R, E, A]): ZIO[R, E, A] =
     zio
-      .foldCauseM(
+      .foldCauseZIO(
         ce =>
           (ce.failureOrCause match {
             case Left(value)  => ZIO.fail(value)
-            case Right(value) => ZIO.halt(value)
-          }).tapCause(c => ZIO.effectTotal(println(c.prettyPrint))),
+            case Right(value) => ZIO.failCause(value)
+          }).tapErrorCause(c => ZIO.succeed(println(c.prettyPrint))),
         a => ZIO.succeed(a)
       )
 
   def onAnyFailure[R, E, A](zio: ZIO[R, E, A], handler: ZIO[R, E, Any]): ZIO[R, E, A] =
-    zio.foldCauseM(r => handler *> ZIO.halt(r), a => ZIO.succeed(a))
+    zio.foldCauseZIO(r => handler *> ZIO.failCause(r), a => ZIO.succeed(a))
 
   def ioException[R, A](zio: ZIO[R, Throwable, A]): ZIO[R, java.io.IOException, A] =
     zio.refineOrDie {
@@ -69,11 +72,11 @@ object CatchAllCauseExercice extends App {
 
   // #6
   val parseNumber: ZIO[Any, Throwable, Int] =
-    ZIO.effect("foo".toInt).refineToOrDie[NumberFormatException]
+    ZIO.attempt("foo".toInt).refineToOrDie[NumberFormatException]
 
   // #7
   def left[R, E, A, B](zio: ZIO[R, E, Either[A, B]]): ZIO[R, Either[E, B], A] =
-    zio.foldM(
+    zio.foldZIO(
       e => ZIO.fail(Left(e)),
       {
         case Right(value) => ZIO.fail(Right(value))
@@ -82,7 +85,7 @@ object CatchAllCauseExercice extends App {
     )
 
   def unleft[R, E, A, B](zio: ZIO[R, Either[E, B], A]): ZIO[R, E, Either[A, B]] =
-    zio.foldM(
+    zio.foldZIO(
       {
         case Left(e)  => ZIO.fail(e)
         case Right(b) => ZIO.succeed(Right(b))
@@ -92,7 +95,7 @@ object CatchAllCauseExercice extends App {
 
   // #8
   def right[R, E, A, B](zio: ZIO[R, E, Either[A, B]]): ZIO[R, Either[E, A], B] =
-    zio.foldM(
+    zio.foldZIO(
       e => ZIO.fail(Left(e)),
       {
         case Left(a)  => ZIO.fail(Right(a))
@@ -101,7 +104,7 @@ object CatchAllCauseExercice extends App {
     )
 
   def unright[R, E, A, B](zio: ZIO[R, Either[E, A], B]): ZIO[R, E, Either[A, B]] =
-    zio.foldM(
+    zio.foldZIO(
       {
         case Left(e)  => ZIO.fail(e)
         case Right(a) => ZIO.succeed(Left(a))
@@ -112,11 +115,11 @@ object CatchAllCauseExercice extends App {
   def catchAllCause[R, E1, E2, A](
       zio: ZIO[R, E1, A],
       handler: Cause[E1] => ZIO[R, E2, A]
-  ): ZIO[R, E2, A] = zio.sandbox.foldM(handler, a => ZIO.succeed(a))
+  ): ZIO[R, E2, A] = zio.sandbox.foldZIO(handler, a => ZIO.succeed(a))
 
   // #10
   def catchAllCause2[R, E1, E2, A](
       zio: ZIO[R, E1, A],
       handler: Cause[E1] => ZIO[R, E2, A]
-  ): ZIO[R, E2, A] = zio.foldCauseM(handler, a => ZIO.succeed(a))
+  ): ZIO[R, E2, A] = zio.foldCauseZIO(handler, a => ZIO.succeed(a))
 }

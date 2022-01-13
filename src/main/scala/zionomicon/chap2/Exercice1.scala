@@ -18,11 +18,10 @@ package zionomicon.chap2
 
 import zio._
 
-import zio.console._
-import zio.clock.Clock
-import zio.duration._
+import zio.Console._
+import zio.Clock
 
-import java.io.IOException
+import zio.ZIOAppDefault
 
 object Exercice1 {
   def readFile(file: String): String = {
@@ -31,8 +30,8 @@ object Exercice1 {
     finally source.close()
   }
   def readFileZio(file: String) =
-    ZIO(scala.io.Source.fromFile(file)).bracketAuto { source =>
-      ZIO.effect(source.getLines().mkString("\n"))
+    ZIO(scala.io.Source.fromFile(file)).acquireReleaseWithAuto { source =>
+      ZIO.attempt(source.getLines().mkString("\n"))
     }
 
   def writeFile(file: String, text: String): Unit = {
@@ -43,8 +42,8 @@ object Exercice1 {
   }
 
   def writeFileZio(file: String, text: String) =
-    ZIO(new java.io.PrintWriter(new java.io.File(file))).bracketAuto { writer =>
-      ZIO.effect(writer.write(text))
+    ZIO(new java.io.PrintWriter(new java.io.File(file))).acquireReleaseWithAuto { writer =>
+      ZIO.attempt(writer.write(text))
     }
   /*
          ###### 3 #####
@@ -58,8 +57,8 @@ object Exercice1 {
       .flatMap(text => writeFileZio(dest, text))
 
   // #4
-  def printLine(line: String) = ZIO.effect(println(line))
-  val readLine                = ZIO.effect(scala.io.StdIn.readLine())
+  def printLine(line: String) = ZIO.attempt(println(line))
+  val readLine                = ZIO.attempt(scala.io.StdIn.readLine())
 
   printLine("What is your name?").flatMap(_ =>
     readLine.flatMap(name => printLine(s"Hello, ${name}!"))
@@ -72,7 +71,7 @@ object Exercice1 {
 
   // #5
 
-  val random = ZIO.effect(scala.util.Random.nextInt(3) + 1)
+  val random = ZIO.attempt(scala.util.Random.nextInt(3) + 1)
   random.flatMap(int =>
     printLine("Guess a number from 1 to 3:").flatMap(_ =>
       readLine.flatMap(num =>
@@ -105,7 +104,7 @@ object Exercice1 {
 
   // 13
   lazy val currentTimeZIO: ZIO[Any, Nothing, Long] =
-    ZIO.effectTotal(System.currentTimeMillis())
+    ZIO.succeed(java.lang.System.currentTimeMillis())
 
   // 14
   def getCacheValue(
@@ -114,7 +113,7 @@ object Exercice1 {
       onFailure: Throwable => Unit
   ): Unit = ???
   def getCacheValueZio(key: String): ZIO[Any, Throwable, String] =
-    ZIO.effectAsync { callback =>
+    ZIO.async { callback =>
       getCacheValue(key, str => callback(ZIO.succeed(str)), th => callback(ZIO.die(th)))
     }
 
@@ -128,7 +127,7 @@ object Exercice1 {
   ): Unit = ???
 
   def saveUserRecordZio(user: User): ZIO[Any, Throwable, Unit] =
-    ZIO.effectAsync { callback =>
+    ZIO.async { callback =>
       saveUserRecord(user, () => callback(ZIO.succeed(())), th => callback(ZIO.die(th)))
     }
 
@@ -145,9 +144,9 @@ object Exercice1 {
   // 19
   def readUntil(
       acceptInput: String => Boolean
-  ): ZIO[Console, IOException, String] =
+  ): ZIO[Any, Throwable, String] =
     for {
-      str <- getStrLn.repeatUntil(acceptInput)
+      str <- readLine.repeatUntil(acceptInput)
     } yield str
 
   def doWhile[R, E, A](body: ZIO[R, E, A])(condition: A => Boolean): ZIO[R, E, A] =
@@ -157,53 +156,57 @@ object Exercice1 {
     } yield res
 }
 
-object Cat extends App {
-  def run(commandLineArguments: List[String]) =
-    ZIO
-      .foreach(commandLineArguments)(filename =>
-        Exercice1
-          .readFileZio(filename)
-          .tap(str => IO(println(str)))
-      )
-      .exitCode
+object Cat extends ZIOAppDefault {
+  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
+    for {
+      args <- getArgs
+      _ <-
+        ZIO
+          .foreach(args)(filename =>
+            Exercice1
+              .readFileZio(filename)
+              .tap(str => IO(println(str)))
+          )
+    } yield ()
+
 }
 
 // 17
 
-object HelloHuman extends App {
+object HelloHuman extends ZIOAppDefault {
 
-  val p = putStrLn("What is your name?").flatMap { _ =>
-    val oo = putStrLn(s"Hello coco")
+  val p = printLine("What is your name?").flatMap { _ =>
+    val oo = printLine(s"Hello coco")
 
-    getStrLn.flatMap { name =>
-      putStrLn(s"Hello $name")
+    readLine.flatMap { name =>
+      printLine(s"Hello $name")
     }
   }
 
   private val program = for {
-    _    <- putStrLn("What is your name?")
-    name <- getStrLn
-    _    <- putStrLn(s"Hello $name")
+    _    <- printLine("What is your name?")
+    name <- readLine
+    _    <- printLine(s"Hello $name")
   } yield ()
 
-  def run(args: List[String]) =
+  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
     p.exitCode
 }
 
 // 18
-import zio.random._
+import zio.Random._
 
-object NumberGuessing extends App {
+object NumberGuessing extends ZIOAppDefault {
 
   private lazy val readInt = for {
-    line <- getStrLn
-    int  <- ZIO.effect(line.toInt)
+    line <- readLine
+    int  <- ZIO.attempt(line.toInt)
   } yield int
 
   private lazy val readIntAndRetry: URIO[Console, Int] =
     readInt
       .orElse(
-        putStrErr("Not a valid integer...").orDie
+        printLineError("Not a valid integer...").orDie
         *> readIntAndRetry
       )
 
@@ -213,20 +216,20 @@ object NumberGuessing extends App {
         readIntAndRetry //.flatMap(str => ZIO.fromTry(Try(str.toInt))).retry(Schedule.forever)
       _ <-
         if (guess < secret)
-          putStrLn("Too low") *> makeAGuess(secret)
+          printLine("Too low") *> makeAGuess(secret)
         else if (guess > secret)
-          putStrLn("To High") *> makeAGuess(secret)
+          printLine("To High") *> makeAGuess(secret)
         else
-          putStr("Won !")
+          printLine("Won !")
     } yield guess
 
-  private val program: ZIO[Random with Console with Clock with Clock, Throwable, Unit] = for {
+  private val program: ZIO[Random with Console with Clock, Throwable, Unit] = for {
     secret <- nextIntBounded(100)
-    _      <- putStrLn("Guess a number?")
+    _      <- printLine("Guess a number?")
     res    <- makeAGuess(secret).timeout(5.seconds)
 
   } yield ()
 
-  def run(args: List[String]) =
+  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
     program.disconnect.timeout(2.second).exitCode
 }

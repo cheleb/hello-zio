@@ -17,16 +17,17 @@
 package zionomicon.chap05
 
 import zio._
-import zio.console._
+import zio.Console._
+import zio.ZIOAppDefault
 
-import zio.duration._
-object SimpleConcur extends App {
+object SimpleConcur extends ZIOAppDefault {
 
   private val program = for {
     res <- ZIO.succeed(1).zipPar(ZIO.sleep(100.millis) *> ZIO.succeed(2))
-    _   <- putStrLn(s"$res")
+    _   <- printLine(s"$res")
   } yield ()
 
-  override def run(args: List[String]): URIO[ZEnv, ExitCode] = program.exitCode
+  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
+    program.exitCode
 
 }

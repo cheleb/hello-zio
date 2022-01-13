@@ -17,6 +17,7 @@
 package zionomicon.chap11
 
 import zio._
+import zio.ZIOAppDefault
 
 trait Cache[-K, +E, +V] { def get(key: K): IO[E, V] }
 object Cache {
@@ -36,16 +37,17 @@ object Cache {
               }
             }
             .flatMap {
-              case Left(promise)  => lookup(key).provide(r).to(promise) *> promise.await
+              case Left(promise) =>
+                lookup(key).provideEnvironment(r).intoPromise(promise) *> promise.await
               case Right(promise) => promise.await
             }
         }
     }
 }
 
-object CacheTest extends App {
+object CacheTest extends ZIOAppDefault {
 
-  override def run(args: List[String]): URIO[ZEnv, ExitCode] =
-    Cache.make((str: String) => ZIO.effect(1)).exitCode
+  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
+    Cache.make((str: String) => ZIO.attempt(1)).exitCode
 
 }

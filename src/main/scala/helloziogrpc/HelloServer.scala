@@ -20,7 +20,7 @@ import io.grpc.Status
 import scalapb.zio_grpc.ServerMain
 import scalapb.zio_grpc.ServiceList
 import zio.{ ZEnv, ZIO }
-import zio.console._
+import zio.Console._
 
 import io.grpc.examples.helloworld.helloworld.ZioHelloworld.ZGreeter
 import io.grpc.examples.helloworld.helloworld.{ HelloReply, HelloRequest }
@@ -29,7 +29,7 @@ object GreeterImpl extends ZGreeter[ZEnv, Any] {
   def sayHello(
       request: HelloRequest
   ): ZIO[zio.ZEnv, Status, HelloReply] =
-    putStrLn(s"Got request: ${request.name}").orDie *>
+    printLine(s"Got request: ${request.name}").orDie *>
     ZIO.succeed(HelloReply(s"Hello, ${request.name}"))
 }
 

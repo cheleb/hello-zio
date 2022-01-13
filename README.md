@@ -17,6 +17,8 @@ Welcome to hello-zio!
 
 * [Aspect](https://www.youtube.com/watch?v=gcqWdNwNEPg)
 
+* [TestContainer](https://hmemcpy.com/2020/08/running-postgres-integration-tests-easily-with-testcontainers-and-zio-test/)
+
 ## Contribution policy ##
 
 Contributions via GitHub pull requests are gladly accepted from their original author. Along with

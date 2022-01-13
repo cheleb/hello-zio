@@ -17,15 +17,15 @@
 package zionomicon.chap3
 
 import zio._
-import zio.console._
-import zio.clock._
-import zio.duration._
+import zio.Console._
+import zio.Clock
+import zio.ZIOAppDefault
 
-object TimerApp extends App {
+object TimerApp extends ZIOAppDefault {
 
-  val goShopping: ZIO[Console with Clock, Nothing, Unit] =
-    putStrLn("Going shopping!").delay(1.hour).orDie
+  val goShopping: URIO[Console with Clock, Unit] =
+    printLine("Going shopping!").delay(1 hour).orDie
 
-  def run(args: List[String]): zio.URIO[zio.ZEnv, ExitCode] = goShopping.exitCode
+  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] = goShopping
 
 }

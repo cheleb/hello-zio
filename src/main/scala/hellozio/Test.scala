@@ -18,36 +18,36 @@ package hellozio
 
 import zio._
 import zio.Console._
-import zio.ZIOAppDefault
 
-object ZManagedTest extends ZIOAppDefault {
+trait UserRepo {
+  def getIt(id: Int): Task[String]
+}
 
-  val managed = for {
-    za <-
-      ZManaged
-        .fromAutoCloseable(ZIO(new AutoCloseable {
+object UserRepo extends Accessible[UserRepo]
 
-          override def close(): Unit = println("ooo 1")
+case class PostgreSQLRepo(dbname: String) extends UserRepo {
 
-        }))
-        .map(_ => 1)
-    zb <-
-      ZManaged
-        .fromAutoCloseable(ZIO(new AutoCloseable {
+  override def getIt(id: Int): Task[String] = Task(s"Agnes $id")
 
-          override def close(): Unit = println("ooo 2")
+}
 
-        }))
-        .map(_ => 2)
-  } yield za + zb
+object PostgreSQLRepo {
+  val layer = ZLayer {
+    ZIO(new PostgreSQLRepo("olivier"))
+  }
+}
 
-  val program = for {
-    _ <- printLine("Start")
-    _ <- managed.use(res => printLine(s"res: $res"))
-    _ <- printLine("End")
+object TestApp extends ZIOAppDefault {
+
+  val program: ZIO[UserRepo with Console, Throwable, Unit] = for {
+    _    <- printLine("Accessible rocks")
+    name <- UserRepo(_.getIt(1))
+    _    <- printLine(s"Hello $name")
   } yield ()
 
   override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
     program
+      .provideCustom(PostgreSQLRepo.layer)
+      .exitCode
 
 }

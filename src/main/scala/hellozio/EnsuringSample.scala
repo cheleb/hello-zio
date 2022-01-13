@@ -17,46 +17,43 @@
 package hellozio
 
 import zio._
-import zio.console._
+import zio.Console._
 
 import java.io.File
 import java.io.PrintWriter
 import java.io.Writer
-import zio.duration._
 
-import zio.clock.Clock
+object EnsuringSample extends ZIOAppDefault {
 
-object EnsuringSample extends App {
+  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
+    myAppLogic
 
-  def run(args: List[String]) =
-    myAppLogic.exitCode
-
-  private def deleteTempFile(file: File): URIO[Console with Clock, Any] =
+  private def deleteTempFile(file: File): ZIO[Console with Clock, Nothing, AnyVal] =
     if (file.getName contentEquals "tmp.txt")
-      (putStrLn(s"del ${file.getName}") *> URIO.sleep(2 seconds) *> ZIO.effect {
+      (printLine(s"del ${file.getName}") *> URIO.sleep(2 seconds) *> ZIO.attempt {
         file.delete()
       }).orDie
     else URIO.unit
 
   private def closeWriter(writer: Writer) =
-    (putStrLn("Closing writer") *> ZIO.effect(writer.close())).orDie
+    (printLine("Closing writer") *> ZIO.attempt(writer.close())).orDie
 
   private def newFile(filename: String) =
-    ZIO(new File(s"/tmp/$filename.txt")).bracket(deleteTempFile(_))
+    ZIO(new File(s"/tmp/$filename.txt")).acquireReleaseWith(deleteTempFile(_))
 
-  private def safeWriter(file: File) = ZIO(new PrintWriter(file)).bracket(closeWriter(_))
+  private def safeWriter(file: File) = ZIO(new PrintWriter(file)).acquireReleaseWith(closeWriter(_))
 
   private val myAppLogic = for {
-    _        <- putStrLn("Hello! What is the filename?")
-    filename <- getStrLn
+    _        <- printLine("Hello! What is the filename?")
+    filename <- readLine
     _ <- newFile(filename) { file =>
       for {
-        _    <- putStrLn("Hello! What is your name?")
-        name <- getStrLn
+        _    <- printLine("Hello! What is your name?")
+        name <- readLine
         _ <- safeWriter(file) { writer =>
           ZIO(writer.append(s"Hello $name\n")).repeatN(10)
         }
-        _ <- putStrLn(s"Hello, ${name}, welcome to ZIO!")
+        _ <- printLine(s"Hello, ${name}, welcome to ZIO!")
       } yield ()
     }
 

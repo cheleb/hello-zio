@@ -17,9 +17,11 @@
 package zionomicon.chap13
 
 import zio._
+import zio.ZIOAppDefault
 
-object HubDemo extends App {
+object HubDemo extends ZIOAppDefault {
 
-  override def run(args: List[String]): URIO[ZEnv, ExitCode] = ???
+  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
+    ???
 
 }

@@ -17,17 +17,17 @@
 package helloziogrpc
 
 import io.grpc.ManagedChannelBuilder
-import zio.console._
+import zio.Console._
 import scalapb.zio_grpc.ZManagedChannel
 
-import zio.Layer
+import zio._
 
 import io.grpc.examples.helloworld.helloworld.ZioHelloworld.GreeterClient
 import io.grpc.examples.helloworld.helloworld.HelloRequest
 import zio.ZIO
 import io.grpc.Status
 
-object ExampleClient extends zio.App {
+object ExampleClient extends zio.ZIOAppDefault {
 
   def clientLayer: Layer[Throwable, GreeterClient] =
     GreeterClient.live(
@@ -39,9 +39,9 @@ object ExampleClient extends zio.App {
   def myAppLogic: ZIO[GreeterClient with Console, Status, Unit] =
     for {
       r <- GreeterClient.sayHello(HelloRequest("World"))
-      _ <- putStrLn(r.message).orDie
+      _ <- printLine(r.message).orDie
     } yield ()
 
-  final def run(args: List[String]) =
+  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
     myAppLogic.provideCustomLayer(clientLayer).exitCode
 }
