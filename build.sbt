@@ -11,6 +11,7 @@ lazy val `hello-zio` =
       libraryDependencies ++= library.zioConfig ++ library.zioGrpc ++ library.zioSchema ++
         Seq(
           library.zio,
+          library.zioManaged,
           library.zioSagaCore,
           library.zioStream,
       //    library.zioKafka,
@@ -38,8 +39,8 @@ lazy val `zio-grpc` = project.in(file("grpc"))
 lazy val library =
   new {
     object Version {
-      val zio = "2.0.0-RC2"
-      val zhttp = "2.0.0-RC4"
+      val zio = "2.0.0-RC5"
+      val zhttp = "2.0.0-RC6"
       val zioSagaCore = "0.4.0"
       val grpcVersion = "1.45.0"
       val zioConfig = "2.0.3"
@@ -59,6 +60,7 @@ lazy val library =
       "io.grpc" % "grpc-netty" % Version.grpcVersion
     )
     val zioStream = "dev.zio" %% "zio-streams" % Version.zio
+    val zioManaged = "dev.zio" %% "zio-managed" % Version.zio
     val zioKafka = "dev.zio" %% "zio-kafka"   % "0.17.0"
     val zioPrelude = "dev.zio" %% "zio-prelude"   % Version.zioPrelude
     val zioSchema = Seq("zio-schema", "zio-schema-derivation").map("dev.zio" %% _  % Version.zioSchema)

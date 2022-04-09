@@ -18,14 +18,13 @@ package zionomicon.chap3
 
 import zio._
 import zio.Console._
-import zio.Clock
 import zio.ZIOAppDefault
 
 object TimerApp extends ZIOAppDefault {
 
-  val goShopping: URIO[Console with Clock, Unit] =
+  val goShopping: URIO[Any, Unit] =
     printLine("Going shopping!").delay(1 hour).orDie
 
-  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] = goShopping
+  override def run = goShopping
 
 }

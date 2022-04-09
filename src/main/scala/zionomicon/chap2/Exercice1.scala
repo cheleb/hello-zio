@@ -19,7 +19,6 @@ package zionomicon.chap2
 import zio._
 
 import zio.Console._
-import zio.Clock
 
 import zio.ZIOAppDefault
 
@@ -30,7 +29,7 @@ object Exercice1 {
     finally source.close()
   }
   def readFileZio(file: String) =
-    ZIO(scala.io.Source.fromFile(file)).acquireReleaseWithAuto { source =>
+    ZIO.attempt(scala.io.Source.fromFile(file)).acquireReleaseWithAuto { source =>
       ZIO.attempt(source.getLines().mkString("\n"))
     }
 
@@ -42,7 +41,7 @@ object Exercice1 {
   }
 
   def writeFileZio(file: String, text: String) =
-    ZIO(new java.io.PrintWriter(new java.io.File(file))).acquireReleaseWithAuto { writer =>
+    ZIO.attempt(new java.io.PrintWriter(new java.io.File(file))).acquireReleaseWithAuto { writer =>
       ZIO.attempt(writer.write(text))
     }
   /*
@@ -156,21 +155,22 @@ object Exercice1 {
     } yield res
 }
 
-object Cat extends ZIOAppDefault {
-  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
-    for {
-      args <- getArgs
-      _ <-
-        ZIO
-          .foreach(args)(filename =>
-            Exercice1
-              .readFileZio(filename)
-              .tap(str => IO(println(str)))
-          )
-    } yield ()
-
-}
-
+/**
+  * object Cat extends ZIOAppDefault {
+  *  override def run =
+  *    (for {
+  *      args <- getArgs
+  *      _ <-
+  *        ZIO
+  *          .foreach(args)(filename =>
+  *            Exercice1
+  *              .readFileZio(filename)
+  *              .tap(str => IO(println(str)))
+  *          )
+  *    } yield ()).provide(Scope.default)
+  *
+  * }
+  */
 // 17
 
 object HelloHuman extends ZIOAppDefault {
@@ -189,8 +189,8 @@ object HelloHuman extends ZIOAppDefault {
     _    <- printLine(s"Hello $name")
   } yield ()
 
-  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
-    p.exitCode
+  override def run =
+    p
 }
 
 // 18
@@ -203,14 +203,14 @@ object NumberGuessing extends ZIOAppDefault {
     int  <- ZIO.attempt(line.toInt)
   } yield int
 
-  private lazy val readIntAndRetry: URIO[Console, Int] =
+  private lazy val readIntAndRetry: URIO[Any, Int] =
     readInt
       .orElse(
         printLineError("Not a valid integer...").orDie
         *> readIntAndRetry
       )
 
-  private def makeAGuess(secret: Int): ZIO[Console with Clock, Throwable, Int] =
+  private def makeAGuess(secret: Int): ZIO[Any, Throwable, Int] =
     for {
       guess <-
         readIntAndRetry //.flatMap(str => ZIO.fromTry(Try(str.toInt))).retry(Schedule.forever)
@@ -223,13 +223,13 @@ object NumberGuessing extends ZIOAppDefault {
           printLine("Won !")
     } yield guess
 
-  private val program: ZIO[Random with Console with Clock, Throwable, Unit] = for {
+  private val program: ZIO[Any, Throwable, Unit] = for {
     secret <- nextIntBounded(100)
     _      <- printLine("Guess a number?")
     res    <- makeAGuess(secret).timeout(5.seconds)
 
   } yield ()
 
-  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
-    program.disconnect.timeout(2.second).exitCode
+  override def run =
+    program.disconnect.timeout(2.second)
 }

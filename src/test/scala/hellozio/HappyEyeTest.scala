@@ -23,21 +23,21 @@ object HappyEyeTest extends ZIOAppDefault {
 
   val start = java.lang.System.currentTimeMillis()
 
-  def log(msg: String): URIO[Console, Unit] =
+  def log(msg: String) =
     ZIO
       .succeed(java.lang.System.currentTimeMillis())
       .map(now => (now - start) / 1000L)
       .flatMap(elapsed => printLine(s"$elapsed $msg").orDie)
 
-  def printSleepPrint(msg: String, delay: Duration): URIO[Console with Clock, Unit] =
+  def printSleepPrint(msg: String, delay: Duration) =
     log(s"START: $msg") *> ZIO.sleep(delay) *> log(s"END: $msg")
 
-  def printSleepFail(msg: String, delay: Duration): ZIO[Console with Clock, Throwable, Unit] =
+  def printSleepFail(msg: String, delay: Duration) =
     log(s"START: $msg") *> ZIO.sleep(delay) *> log(s"FAIL: $msg") *> ZIO.fail(
       new RuntimeException(s"FAIL: msg")
     )
 
-  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
+  override def run =
     HappyEyeballs(
       List(
         printSleepPrint("task1", 10.second),
@@ -49,6 +49,5 @@ object HappyEyeTest extends ZIOAppDefault {
     )
       .tap(v => log(s"WON: $v"))
       .tapError(err => log(s"ERROR: $err"))
-      .exitCode
 
 }

@@ -19,7 +19,7 @@ package hellozio
 import zio.test._
 import zio.test.Assertion._
 import zio.ZIO
-object ExampleSpec extends DefaultRunnableSpec {
+object ExampleSpec extends ZIOSpecDefault {
   def spec =
     suite("ExampleSpec")(
       test("addition works") {

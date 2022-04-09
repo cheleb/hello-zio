@@ -17,6 +17,7 @@
 package zionomicon.chap16
 
 import zio._
+import zio.managed._
 
 trait MemoMap[K, -R, +E, +V] {
   def get(k: K): ZManaged[R, E, V]

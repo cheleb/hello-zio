@@ -22,15 +22,15 @@ import zio.ZIOAppDefault
 
 object Concur extends ZIOAppDefault {
 
-  private val zio1 = ZIO.sleep(100 millis) *> ZIO(1)
-  private val zio2 = ZIO.sleep(500 millis) *> ZIO(2)
+  private val zio1 = ZIO.sleep(100 millis) *> ZIO.succeed(1)
+  private val zio2 = ZIO.sleep(500 millis) *> ZIO.succeed(2)
 
   private val program = for {
     res <- zio1.raceEither(zio2)
     _   <- printLine(s"Res: $res")
   } yield ()
 
-  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
+  override def run =
     program.exitCode
 
 }
@@ -39,14 +39,14 @@ object ValidatePar extends ZIOAppDefault {
 
   private def zioOf(i: Int) =
     ZIO.sleep(100 * i millis) *> printLine(s"$i") *> (if (i % 3 == 0) ZIO.fail(i)
-                                                      else ZIO(i).orElseFail(0))
+                                                      else ZIO.succeed(i))
 
   private val program = for {
     res <- ZIO.validatePar(1 to 10)(zioOf)
     _   <- printLine(s"Res: $res")
   } yield ()
 
-  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
+  override def run =
     program.catchAll {
       case e => printLineError(e.toString())
     }.exitCode

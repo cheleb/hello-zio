@@ -26,7 +26,7 @@ final case class HelloConfig(port: Int, test: Test)
 
 object ConfigApp extends ZIOAppDefault {
 
-  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] = ???
+  override def run = ???
 
   private val configDescriptor = descriptor[HelloConfig]
   /*

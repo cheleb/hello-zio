@@ -16,12 +16,11 @@
 
 package zionomicon.chap13
 
-import zio._
 import zio.ZIOAppDefault
 
 object HubDemo extends ZIOAppDefault {
 
-  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
+  override def run =
     ???
 
 }

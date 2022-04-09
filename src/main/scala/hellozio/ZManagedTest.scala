@@ -17,6 +17,7 @@
 package hellozio
 
 import zio._
+import zio.managed._
 import zio.Console._
 import zio.ZIOAppDefault
 
@@ -25,7 +26,7 @@ object ZManagedTest extends ZIOAppDefault {
   val managed = for {
     za <-
       ZManaged
-        .fromAutoCloseable(ZIO(new AutoCloseable {
+        .fromAutoCloseable(ZIO.succeed(new AutoCloseable {
 
           override def close(): Unit = println("ooo 1")
 
@@ -33,7 +34,7 @@ object ZManagedTest extends ZIOAppDefault {
         .map(_ => 1)
     zb <-
       ZManaged
-        .fromAutoCloseable(ZIO(new AutoCloseable {
+        .fromAutoCloseable(ZIO.succeed(new AutoCloseable {
 
           override def close(): Unit = println("ooo 2")
 
@@ -47,7 +48,7 @@ object ZManagedTest extends ZIOAppDefault {
     _ <- printLine("End")
   } yield ()
 
-  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
+  override def run =
     program
 
 }

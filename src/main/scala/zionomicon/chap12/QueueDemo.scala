@@ -31,7 +31,7 @@ object QueueDemo extends ZIOAppDefault {
     _     <- printLine("Goobbye crual world.")
   } yield ()
 
-  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
+  override def run =
     program.exitCode
 
 }

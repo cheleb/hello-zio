@@ -20,7 +20,7 @@ import zio._
 import zio.test._
 import zionomicon.chap3.TimerApp.goShopping
 
-object TimerAppSpec extends DefaultRunnableSpec {
+object TimerAppSpec extends ZIOSpecDefault {
   def spec =
     suite("Timer")(
       test("goShopping delays for one hour") {

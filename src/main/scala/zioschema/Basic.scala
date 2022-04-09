@@ -18,7 +18,7 @@ package zioschema
 
 import zio._
 import zio.Console._
-import zio.ZEnv
+
 import zio.schema._
 
 object Basic extends ZIOAppDefault {
@@ -35,7 +35,7 @@ object Basic extends ZIOAppDefault {
       (age: Int) => Either.cond(age <= 120, Age(age), "Too old"),
       (age: Age) => Right(age.i)
     )
-  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
+  override def run =
     printLine(personSchema.diff(Person("agnes", 50), Person("Agnes", 51)))
 
 }

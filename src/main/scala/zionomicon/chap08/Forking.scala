@@ -24,7 +24,7 @@ object Forking extends ZIOAppDefault {
   val child                 = grandChild.fork.flatMap(fiber => fiber.join)
   val program               = child.fork *> ZIO.never
 
-  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] = program.exitCode
+  override def run: URIO[Any, ExitCode] = program.exitCode
 
 }
 
@@ -41,13 +41,13 @@ object ForkingTwice extends ZIOAppDefault {
     _     <- fiber.join
   } yield ()
 
-  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] = program
+  override def run = program
 
 }
 
 object ForkingInScopeTwice extends ZIOAppDefault {
 
-  def effect(scope: ZScope) =
+  def effect(scope: Scope) =
     for {
       _ <- ZIO.succeed(println("Heart beat")).delay(1 second).forever.forkIn(scope)
       _ <- ZIO.succeed(println("Hard work..."))
@@ -67,6 +67,6 @@ object ForkingInScopeTwice extends ZIOAppDefault {
     _     <- fiber.join
   } yield ()
 
-  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] = program.exitCode
+  override def run = program.exitCode
 
 }

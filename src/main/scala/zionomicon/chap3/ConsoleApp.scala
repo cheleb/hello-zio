@@ -16,7 +16,6 @@
 
 package zionomicon.chap3
 
-import zio._
 import zio.Console._
 import zio.ZIOAppDefault
 object ConsoleApp extends ZIOAppDefault {
@@ -27,6 +26,6 @@ object ConsoleApp extends ZIOAppDefault {
     _    <- printLine(s"Hi $name")
   } yield ()
 
-  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] = greet.exitCode
+  override def run = greet.exitCode
 
 }

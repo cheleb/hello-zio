@@ -23,7 +23,7 @@ import java.net.Socket
 
 object HappyTestSocket extends ZIOAppDefault {
 
-  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
+  override def run =
     ZIO
       .attemptBlocking(InetAddress.getAllByName("debian.org").toList)
       .map { addresses =>

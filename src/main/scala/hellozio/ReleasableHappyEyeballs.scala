@@ -27,7 +27,7 @@ object ReleasableHappyEyeballs {
       tasks: List[ZIO[R, Throwable, T]],
       delay: Duration,
       releaseExtra: T => ZIO[R, Nothing, Unit]
-  ): ZIO[R with Clock, Throwable, T] =
+  ): ZIO[R, Throwable, T] =
     for {
       successful <- Queue.bounded[T](tasks.size)
       enqueingTasks = tasks.map { task =>

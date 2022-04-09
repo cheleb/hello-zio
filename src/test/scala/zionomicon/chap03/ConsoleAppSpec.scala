@@ -21,7 +21,7 @@ import zio.test.Assertion._
 
 import zionomicon.chap3.ConsoleApp
 
-object ConsoleAppSpec extends DefaultRunnableSpec {
+object ConsoleAppSpec extends ZIOSpecDefault {
   def spec =
     suite("ConsoleApp Spec")(
       test("Greet say hi")(

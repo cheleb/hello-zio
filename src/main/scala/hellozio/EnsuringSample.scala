@@ -25,10 +25,10 @@ import java.io.Writer
 
 object EnsuringSample extends ZIOAppDefault {
 
-  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
+  override def run =
     myAppLogic
 
-  private def deleteTempFile(file: File): ZIO[Console with Clock, Nothing, AnyVal] =
+  private def deleteTempFile(file: File): ZIO[Any, Nothing, AnyVal] =
     if (file.getName contentEquals "tmp.txt")
       (printLine(s"del ${file.getName}") *> URIO.sleep(2 seconds) *> ZIO.attempt {
         file.delete()
@@ -39,9 +39,10 @@ object EnsuringSample extends ZIOAppDefault {
     (printLine("Closing writer") *> ZIO.attempt(writer.close())).orDie
 
   private def newFile(filename: String) =
-    ZIO(new File(s"/tmp/$filename.txt")).acquireReleaseWith(deleteTempFile(_))
+    ZIO.attempt(new File(s"/tmp/$filename.txt")).acquireReleaseWith(deleteTempFile(_))
 
-  private def safeWriter(file: File) = ZIO(new PrintWriter(file)).acquireReleaseWith(closeWriter(_))
+  private def safeWriter(file: File) =
+    ZIO.attempt(new PrintWriter(file)).acquireReleaseWith(closeWriter(_))
 
   private val myAppLogic = for {
     _        <- printLine("Hello! What is the filename?")
@@ -51,7 +52,7 @@ object EnsuringSample extends ZIOAppDefault {
         _    <- printLine("Hello! What is your name?")
         name <- readLine
         _ <- safeWriter(file) { writer =>
-          ZIO(writer.append(s"Hello $name\n")).repeatN(10)
+          ZIO.attempt(writer.append(s"Hello $name\n")).repeatN(10)
         }
         _ <- printLine(s"Hello, ${name}, welcome to ZIO!")
       } yield ()

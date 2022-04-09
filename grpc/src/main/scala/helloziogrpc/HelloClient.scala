@@ -42,6 +42,6 @@ object ExampleClient extends zio.ZIOAppDefault {
       _ <- printLine(r.message).orDie
     } yield ()
 
-  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
+  override def run =
     myAppLogic.provideCustomLayer(clientLayer).exitCode
 }

@@ -23,7 +23,7 @@ import zio.ZIOAppDefault
 
 object SemaphoreDemo extends ZIOAppDefault {
 
-  def queryDatabase(connections: Ref[Int]): ZIO[Console with Clock, Nothing, Unit] =
+  def queryDatabase(connections: Ref[Int]): ZIO[Any, Nothing, Unit] =
     connections
       .updateAndGet(_ + 1)
       .flatMap { n =>
@@ -40,7 +40,7 @@ object SemaphoreDemo extends ZIOAppDefault {
     _ <- ZIO.foreachParDiscard(1 to 10)(_ => semaphore.withPermit(queryDatabase(ref)))
   } yield ()
 
-  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
+  override def run =
     program.exitCode
 
 }

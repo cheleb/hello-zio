@@ -24,7 +24,7 @@ object BasicError extends ZIOAppDefault {
 
   private val program = ZIO.attempt(1 / 0).sandbox
 
-  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
+  override def run =
     program.exitCode
 
 }
@@ -32,9 +32,9 @@ object BasicError extends ZIOAppDefault {
 object CatchAllCauseExercice extends ZIOAppDefault {
 
   def failWithMessage(string: String) =
-    ZIO(throw new RuntimeException(string)).ignore
+    ZIO.attempt(throw new RuntimeException(string)).ignore
 
-  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
+  override def run =
     failWithMessage("ouille").exitCode
 
   def recoverFromSomeDefects[R, E, A](zio: ZIO[R, E, A])(f: Throwable => Option[A]): ZIO[R, E, A] =

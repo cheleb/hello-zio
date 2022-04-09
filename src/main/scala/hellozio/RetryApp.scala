@@ -29,6 +29,6 @@ object RetryApp extends ZIOAppDefault {
       })
       .timeout(1.seconds) *> Console.printLine("...Plaf")
 
-  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
+  override def run =
     program.exitCode
 }

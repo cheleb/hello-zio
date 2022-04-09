@@ -17,6 +17,7 @@
 package hellozio
 
 import zio._
+import zio.managed._
 
 import zio.Console._
 
@@ -27,7 +28,7 @@ object Simple extends ZIOAppDefault {
   def zio1  = ZIO.succeed(Some(false))
   def zio2  = ZIO.succeed(Some(true))
   def boom  = ZIO.fail("Aille").sandbox
-  def dummy = ZIO(1)
+  def dummy = ZIO.succeed(1)
 
   val z = zio1 *> zio2
 
@@ -46,6 +47,6 @@ object Simple extends ZIOAppDefault {
 
   } yield ()
 
-  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] = program
+  override def run = program
 
 }

@@ -25,7 +25,7 @@ final case class Tree[+A](head: A, tail: List[Tree[A]])
 object FiberRefTest extends ZIOAppDefault {
 
   type Log = Tree[Chunk[String]]
-  val loggingRef: UIO[FiberRef[Log]] = FiberRef.make[Log](
+  val loggingRef: ZIO[Scope, Nothing, FiberRef[Log]] = FiberRef.make[Log](
     Tree(Chunk.empty, List.empty),
     _ => Tree(Chunk.empty, List.empty),
     (parent, child) => parent.copy(tail = child :: parent.tail)
@@ -51,7 +51,7 @@ object FiberRefTest extends ZIOAppDefault {
     _      <- printLine(log.toString)
   } yield ()
 
-  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
+  override def run: URIO[Scope, ExitCode] =
     program.exitCode
 
 }

@@ -27,27 +27,27 @@ object UserRepo extends Accessible[UserRepo]
 
 case class PostgreSQLRepo(dbname: String) extends UserRepo {
 
-  override def getIt(id: Int): Task[String] = Task(s"Agnes $id")
+  override def getIt(id: Int): Task[String] = Task.succeed(s"Agnes $id")
 
 }
 
 object PostgreSQLRepo {
   val layer = ZLayer {
-    ZIO(new PostgreSQLRepo("olivier"))
+    ZIO.succeed(new PostgreSQLRepo("olivier"))
   }
 }
 
 object TestApp extends ZIOAppDefault {
 
-  val program: ZIO[UserRepo with Console, Throwable, Unit] = for {
+  val program: ZIO[UserRepo, Throwable, Unit] = for {
     _    <- printLine("Accessible rocks")
     name <- UserRepo(_.getIt(1))
     _    <- printLine(s"Hello $name")
   } yield ()
 
-  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] =
+  override def run =
     program
-      .provideCustom(PostgreSQLRepo.layer)
+      .provide(PostgreSQLRepo.layer)
       .exitCode
 
 }

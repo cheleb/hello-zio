@@ -20,6 +20,6 @@ import zio._
 
 object ZioJsonDemo extends ZIOAppDefault {
 
-  override def run: ZIO[Environment with ZEnv with ZIOAppArgs, Any, Any] = ???
+  override def run = ???
 
 }
