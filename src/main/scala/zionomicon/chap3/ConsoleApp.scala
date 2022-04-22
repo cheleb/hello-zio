@@ -20,7 +20,7 @@ import zio.Console._
 import zio.ZIOAppDefault
 object ConsoleApp extends ZIOAppDefault {
 
-  val greet = for {
+  lazy val greet = for {
     _    <- printLine("Who are you?")
     name <- readLine
     _    <- printLine(s"Hi $name")
