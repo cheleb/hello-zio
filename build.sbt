@@ -40,13 +40,13 @@ lazy val library =
   new {
     object Version {
       val zio = "2.0.0-RC5"
-      val zhttp = "2.0.0-RC6"
+      val zhttp = "2.0.0-RC7"
       val zioSagaCore = "0.4.0"
-      val grpcVersion = "1.45.0"
-      val zioConfig = "2.0.3"
-      val zioSchema = "0.2.0-RC1-1"
-      val zioJson = "0.3.0-RC3"
-      val zioPrelude = "1.0.0-RC10"
+      val grpcVersion = "1.46.0"
+      val zioConfig = "2.0.4"
+      val zioSchema = "0.2.0-RC5"
+      val zioJson = "0.3.0-RC7"
+      val zioPrelude = "1.0.0-RC13"
 
     }
     val zio        = "dev.zio"        %% "zio"        % Version.zio
@@ -66,7 +66,7 @@ lazy val library =
     val zioSchema = Seq("zio-schema", "zio-schema-derivation").map("dev.zio" %% _  % Version.zioSchema)
     val zioJson = "dev.zio" %% "zio-json" % Version.zioJson
     val zioPrometheus = "dev.zio" %% "zio-metrics-prometheus" % "1.0.13"
-    val jacksonDatabind = "com.fasterxml.jackson.core" % "jackson-databind" % "2.13.2"
+    val jacksonDatabind = "com.fasterxml.jackson.core" % "jackson-databind" % "2.13.2.2"
   }
 
 // *****************************************************************************
