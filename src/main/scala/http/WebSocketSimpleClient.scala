@@ -24,7 +24,7 @@ import zio.stream.ZStream
 object WebSocketSimpleClient extends ZIOAppDefault {
 
   // Setup client envs
-  val env = EventLoopGroup.auto() ++ ChannelFactory.auto
+  val env = Scope.default ++ EventLoopGroup.auto() ++ ChannelFactory.auto
 
   val url = "ws://localhost:8091/subscriptions"
 
