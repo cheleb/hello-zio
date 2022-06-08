@@ -26,7 +26,7 @@ object ExampleSpec extends ZIOSpecDefault {
         assert(1 + 1)(equalTo(2))
       },
       test("ZIO.succeed succeeds with specified value") {
-        assertM(ZIO.succeed(1 + 1))(equalTo(2))
+        assertZIO(ZIO.succeed(1 + 1))(equalTo(2))
       }
     )
 }

@@ -23,11 +23,15 @@ trait UserRepo {
   def getIt(id: Int): Task[String]
 }
 
-object UserRepo extends Accessible[UserRepo]
+object UserRepo extends UserRepo {
+
+  override def getIt(id: Int): Task[String] = ???
+
+}
 
 case class PostgreSQLRepo(dbname: String) extends UserRepo {
 
-  override def getIt(id: Int): Task[String] = Task.succeed(s"Agnes $id")
+  override def getIt(id: Int): Task[String] = ZIO.succeed(s"Agnes $id")
 
 }
 
@@ -41,7 +45,7 @@ object TestApp extends ZIOAppDefault {
 
   val program: ZIO[UserRepo, Throwable, Unit] = for {
     _    <- printLine("Accessible rocks")
-    name <- UserRepo(_.getIt(1))
+    name <- UserRepo.getIt(1)
     _    <- printLine(s"Hello $name")
   } yield ()
 

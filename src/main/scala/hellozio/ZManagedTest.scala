@@ -74,16 +74,13 @@ object ZManagedTest extends ZIOAppDefault {
 
 object ZUnManagedTest extends ZIOAppDefault {
 
-  val managed: ZIO[Scope,IOException,Unit] = {
+  val managed: ZIO[Scope, IOException, Unit] = {
     for {
-      _ <-
-        aLeakedIO(1)
-        .withFinalizerAuto
-        _ <-
-          aLeakedIO(2).withFinalizerAuto
-        } yield ()
-      }
-      val program = for {
+      _ <- aLeakedIO(1).withFinalizerAuto
+      _ <- aLeakedIO(2).withFinalizerAuto
+    } yield ()
+  }
+  val program = for {
     _ <- printLine("Start")
     _ <- ZIO.scoped(managed.flatMap(_ => printLine(s" ✅ 3")))
     _ <- printLine("End")
