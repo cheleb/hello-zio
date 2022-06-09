@@ -20,7 +20,6 @@ import zio.ZIOAppDefault
 
 object HubDemo extends ZIOAppDefault {
 
-  override def run =
-    ???
+  override def run = ???
 
 }

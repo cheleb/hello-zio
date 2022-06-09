@@ -22,21 +22,19 @@ object AStar extends App {
 
   printMatrix(matrix)
 
-  def aStar(start: (Int, Int), end: (Int, Int)): Seq[(Int, Int)] =
-    ???
+  def aStar(start: (Int, Int), end: (Int, Int)): Seq[(Int, Int)] = ???
 
   def printMatrix(matrix: Array[Array[Int]]): Unit =
-    matrix.zipWithIndex.foreach {
-      case (line, i) =>
-        print(s"$i: ")
-        println(
-          line
-            .map {
-              case 0 => '.'
-              case 1 => 'O'
-            }
-            .mkString("")
-        )
+    matrix.zipWithIndex.foreach { case (line, i) =>
+      print(s"$i: ")
+      println(
+        line
+          .map {
+            case 0 => '.'
+            case 1 => 'O'
+          }
+          .mkString("")
+      )
     }
 
 }

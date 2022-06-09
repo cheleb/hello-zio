@@ -24,18 +24,15 @@ object BasicError extends ZIOAppDefault {
 
   private val program = ZIO.attempt(1 / 0).sandbox
 
-  override def run =
-    program.exitCode
+  override def run = program.exitCode
 
 }
 
 object CatchAllCauseExercice extends ZIOAppDefault {
 
-  def failWithMessage(string: String) =
-    ZIO.attempt(throw new RuntimeException(string)).ignore
+  def failWithMessage(string: String) = ZIO.attempt(throw new RuntimeException(string)).ignore
 
-  override def run =
-    failWithMessage("ouille").exitCode
+  override def run = failWithMessage("ouille").exitCode
 
   def recoverFromSomeDefects[R, E, A](zio: ZIO[R, E, A])(f: Throwable => Option[A]): ZIO[R, E, A] =
     zio.foldCauseZIO(
@@ -66,8 +63,8 @@ object CatchAllCauseExercice extends ZIOAppDefault {
     zio.foldCauseZIO(r => handler *> ZIO.failCause(r), a => ZIO.succeed(a))
 
   def ioException[R, A](zio: ZIO[R, Throwable, A]): ZIO[R, java.io.IOException, A] =
-    zio.refineOrDie {
-      case io: IOException => io
+    zio.refineOrDie { case io: IOException =>
+      io
     }
 
   // #6

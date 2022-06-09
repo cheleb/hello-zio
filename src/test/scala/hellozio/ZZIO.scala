@@ -24,7 +24,7 @@ object TestT extends App {
 
   trait A
 
-  trait B //extends A
+  trait B // extends A
 
   type AB = B with A
 
@@ -41,8 +41,7 @@ object TestT extends App {
 
 case class ZZIO[-R, +E, +A](run: R => Either[E, A]) { self =>
 
-  def map[B](f: A => B): ZZIO[R, E, B] =
-    ZZIO(r => self.run(r).map(f))
+  def map[B](f: A => B): ZZIO[R, E, B] = ZZIO(r => self.run(r).map(f))
 
   def flatMap[R1 <: R, E1 >: E, B](f: A => ZZIO[R1, E1, B]): ZZIO[R1, E1, B] =
     ZZIO { r =>

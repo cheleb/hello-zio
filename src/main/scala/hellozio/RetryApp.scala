@@ -22,13 +22,12 @@ import zio.ZIOAppDefault
 object RetryApp extends ZIOAppDefault {
 
   val program = ZIO
-      .fromTry(throw new RuntimeException("poum"))
-      .tapError(e => Console.printLine(e.getMessage()))
-      .retry(Schedule.exponential(100.milliseconds) && Schedule.recurWhile[Throwable] {
-        case e => true
-      })
-      .timeout(1.seconds) *> Console.printLine("...Plaf")
+    .fromTry(throw new RuntimeException("poum"))
+    .tapError(e => Console.printLine(e.getMessage()))
+    .retry(Schedule.exponential(100.milliseconds) && Schedule.recurWhile[Throwable] { case e =>
+      true
+    })
+    .timeout(1.seconds) *> Console.printLine("...Plaf")
 
-  override def run =
-    program.exitCode
+  override def run = program.exitCode
 }

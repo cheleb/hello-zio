@@ -31,7 +31,6 @@ object QueueDemo extends ZIOAppDefault {
     _     <- printLine("Goobbye crual world.")
   } yield ()
 
-  override def run =
-    program.exitCode
+  override def run = program.exitCode
 
 }

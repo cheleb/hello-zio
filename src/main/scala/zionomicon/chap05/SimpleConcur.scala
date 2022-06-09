@@ -27,7 +27,6 @@ object SimpleConcur extends ZIOAppDefault {
     _   <- printLine(s"$res")
   } yield ()
 
-  override def run =
-    program.exitCode
+  override def run = program.exitCode
 
 }

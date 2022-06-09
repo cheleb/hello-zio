@@ -25,12 +25,13 @@ import zio.stream.ZStream
 object WebSocketEcho extends ZIOAppDefault {
   private val socket =
     Socket.collect[WebSocketFrame] {
-      case WebSocketFrame.Text("FOO") => ZStream.succeed(WebSocketFrame.text("BAR"))
-      case WebSocketFrame.Text("BAR") => ZStream.succeed(WebSocketFrame.text("FOO"))
-      case WebSocketFrame.Ping        => ZStream.succeed(WebSocketFrame.pong)
-      case WebSocketFrame.Pong        => ZStream.succeed(WebSocketFrame.ping)
-      case fr @ WebSocketFrame.Text(_) =>
-        ZStream.repeat(fr).schedule(Schedule.spaced(1.second)).take(10)
+      case WebSocketFrame.Ping => ZStream.succeed(WebSocketFrame.pong)
+      case WebSocketFrame.Pong => ZStream.succeed(WebSocketFrame.ping)
+      case fr @ WebSocketFrame.Text(txt) =>
+        ZStream
+          .range(1, 5)
+          .map(i => WebSocketFrame.Text(s"Echo ((( $i )))"))
+          .schedule(Schedule.spaced(1.second)) ++ ZStream.succeed(WebSocketFrame.close(1000, None))
     }
 
   private val app =
@@ -39,6 +40,5 @@ object WebSocketEcho extends ZIOAppDefault {
       case Method.GET -> !! / "subscriptions" => socket.toResponse
     }
 
-  override def run =
-    Server.start(8090, app).exitCode
+  override def run = Server.start(8091, app).exitCode
 }

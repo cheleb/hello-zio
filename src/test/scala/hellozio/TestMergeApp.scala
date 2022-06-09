@@ -59,6 +59,6 @@ object TestMergeApp extends App {
 
   println(fibo(10))
 
-  //println(merge2(List(l1, l2, l3)))
+  // println(merge2(List(l1, l2, l3)))
 
 }

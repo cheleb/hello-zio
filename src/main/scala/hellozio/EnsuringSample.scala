@@ -17,7 +17,7 @@
 package hellozio
 
 import zio._
-import zio.managed._
+
 import zio.Console._
 
 import java.io.File
@@ -26,8 +26,7 @@ import java.io.Writer
 
 object EnsuringSample extends ZIOAppDefault {
 
-  override def run =
-    myAppLogic
+  override def run = myAppLogic
 
   private def deleteTempFile(file: File): ZIO[Any, Nothing, AnyVal] =
     if (file.getName contentEquals "tmp.txt")

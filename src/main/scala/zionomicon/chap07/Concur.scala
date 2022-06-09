@@ -30,8 +30,7 @@ object Concur extends ZIOAppDefault {
     _   <- printLine(s"Res: $res")
   } yield ()
 
-  override def run =
-    program.exitCode
+  override def run = program.exitCode
 
 }
 
@@ -47,8 +46,8 @@ object ValidatePar extends ZIOAppDefault {
   } yield ()
 
   override def run =
-    program.catchAll {
-      case e => printLineError(e.toString())
+    program.catchAll { case e =>
+      printLineError(e.toString())
     }.exitCode
 
 }

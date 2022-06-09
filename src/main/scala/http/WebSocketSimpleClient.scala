@@ -26,20 +26,26 @@ object WebSocketSimpleClient extends ZIOAppDefault {
   // Setup client envs
   val env = Scope.default ++ EventLoopGroup.auto() ++ ChannelFactory.auto
 
-  val url = "ws://localhost:8091/subscriptions"
+  val url = "ws://localhost:8090/subscriptions"
 
-  val app = Socket
-    .collect[WebSocketFrame] {
-      case WebSocketFrame.Text("BAZ") =>
-        Console.printLine("ooo")
-        ZStream.succeed(WebSocketFrame.close(1000))
-      case frame =>
-        Console.printLine("ooo")
-        ZStream.succeed(frame)
-    }
-    .toSocketApp
-    .connect(url)
+  val app = for {
+    so <-
+      Socket
+        .collect[WebSocketFrame] {
+          case WebSocketFrame.Ping =>
+            ZStream.succeed(WebSocketFrame.pong)
+          case WebSocketFrame.Text("BAZ") =>
+            ZStream.fromZIO(Console.printLine("ooo\n")) *>
+            ZStream.succeed(WebSocketFrame.close(1000))
+          case frame =>
+            ZStream.fromZIO(Console.printLine("ooo\n")) *>
+            ZStream.succeed(frame)
+        }
+        // .toSocketApp
+        .connect(url)
 
-  override def run =
-    app.exitCode.provide(env)
+    _ <- Console.readLine
+  } yield ()
+
+  override def run = app.provide(env).exitCode
 }

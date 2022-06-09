@@ -135,8 +135,7 @@ object Exercice1 {
   import scala.concurrent.{ ExecutionContext, Future }
   trait Query
   trait Result
-  def doQuery(query: Query)(implicit ec: ExecutionContext): Future[Result] =
-    ???
+  def doQuery(query: Query)(implicit ec: ExecutionContext): Future[Result] = ???
   def doQueryZio(query: Query): ZIO[Any, Throwable, Result] =
     ZIO.fromFuture(implicit ec => doQuery(query))
 
@@ -155,19 +154,9 @@ object Exercice1 {
     } yield res
 }
 
-/**
-  * object Cat extends ZIOAppDefault {
-  *  override def run =
-  *    (for {
-  *      args <- getArgs
-  *      _ <-
-  *        ZIO
-  *          .foreach(args)(filename =>
-  *            Exercice1
-  *              .readFileZio(filename)
-  *              .tap(str => IO(println(str)))
-  *          )
-  *    } yield ()).provide(Scope.default)
+/** object Cat extends ZIOAppDefault { override def run = (for { args <- getArgs _ <- ZIO
+  * .foreach(args)(filename => Exercice1 .readFileZio(filename) .tap(str => IO(println(str))) ) }
+  * yield ()).provide(Scope.default)
   *
   * }
   */
@@ -189,8 +178,7 @@ object HelloHuman extends ZIOAppDefault {
     _    <- printLine(s"Hello $name")
   } yield ()
 
-  override def run =
-    p
+  override def run = p
 }
 
 // 18
@@ -207,13 +195,13 @@ object NumberGuessing extends ZIOAppDefault {
     readInt
       .orElse(
         printLineError("Not a valid integer...").orDie
-        *> readIntAndRetry
+          *> readIntAndRetry
       )
 
   private def makeAGuess(secret: Int): ZIO[Any, Throwable, Int] =
     for {
       guess <-
-        readIntAndRetry //.flatMap(str => ZIO.fromTry(Try(str.toInt))).retry(Schedule.forever)
+        readIntAndRetry // .flatMap(str => ZIO.fromTry(Try(str.toInt))).retry(Schedule.forever)
       _ <-
         if (guess < secret)
           printLine("Too low") *> makeAGuess(secret)
@@ -230,6 +218,5 @@ object NumberGuessing extends ZIOAppDefault {
 
   } yield ()
 
-  override def run =
-    program.disconnect.timeout(2.second)
+  override def run = program.disconnect.timeout(2.second)
 }

@@ -47,7 +47,6 @@ object Cache {
 
 object CacheTest extends ZIOAppDefault {
 
-  override def run =
-    Cache.make((str: String) => ZIO.attempt(1)).exitCode
+  override def run = Cache.make((str: String) => ZIO.attempt(1)).exitCode
 
 }

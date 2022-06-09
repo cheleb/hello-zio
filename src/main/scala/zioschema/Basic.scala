@@ -35,7 +35,6 @@ object Basic extends ZIOAppDefault {
       (age: Int) => Either.cond(age <= 120, Age(age), "Too old"),
       (age: Age) => Right(age.i)
     )
-  override def run =
-    printLine(personSchema.diff(Person("agnes", 50), Person("Agnes", 51)))
+  override def run = printLine(personSchema.diff(Person("agnes", 50), Person("Agnes", 51)))
 
 }

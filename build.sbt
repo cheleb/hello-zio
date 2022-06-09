@@ -1,3 +1,11 @@
+
+
+inThisBuild(Seq(
+  scalaVersion := "2.13.8",
+  scalacOptions += "-P:kind-projector:underscore-placeholders",
+  run / fork := true
+))
+
 // *****************************************************************************
 // Projects
 // *****************************************************************************
@@ -7,9 +15,11 @@ lazy val `hello-zio` =
     .in(file("."))
     .enablePlugins(AutomateHeaderPlugin)
     .settings(settings)
+    .settings(addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.2" cross CrossVersion.full))
     .settings(
       libraryDependencies ++= library.zioConfig ++ library.zioGrpc ++ library.zioSchema ++
         Seq(
+          library.sttpTapirClient,
           library.zio,
           library.zioManaged,
           library.zioSagaCore,
@@ -20,6 +30,7 @@ lazy val `hello-zio` =
           library.zioPrelude,
           library.zhttp,
           library.zioJson,
+          library.logback,
           library.zioTest         % Test,
           library.zioTestSBT      % Test
       )
@@ -44,11 +55,14 @@ lazy val library =
       val zioSagaCore = "0.4.0"
       val grpcVersion = "1.47.0"
       val zioConfig = "2.0.4"
-      val zioSchema = "0.2.0-RC6"
+      val zioSchema = "0.2.0-RC6-1"
       val zioJson = "0.3.0-RC8"
       val zioPrelude = "1.0.0-RC14"
+      val logback = "1.2.11"
 
     }
+    val logback = "ch.qos.logback" % "logback-classic" % Version.logback
+    val sttpTapirClient =   "com.softwaremill.sttp.client3" %% "async-http-client-backend-zio" % "3.6.2"
     val zio        = "dev.zio"        %% "zio"        % Version.zio
     val zhttp      = "io.d11"         %% "zhttp"      % Version.zhttp
     val zioTest    = "dev.zio"          %% "zio-test"     % Version.zio

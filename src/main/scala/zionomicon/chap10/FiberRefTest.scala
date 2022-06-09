@@ -51,7 +51,6 @@ object FiberRefTest extends ZIOAppDefault {
     _      <- printLine(log.toString)
   } yield ()
 
-  override def run: URIO[Scope, ExitCode] =
-    program.exitCode
+  override def run: URIO[Scope, ExitCode] = program.exitCode
 
 }

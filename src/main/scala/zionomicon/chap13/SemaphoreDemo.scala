@@ -40,7 +40,6 @@ object SemaphoreDemo extends ZIOAppDefault {
     _ <- ZIO.foreachParDiscard(1 to 10)(_ => semaphore.withPermit(queryDatabase(ref)))
   } yield ()
 
-  override def run =
-    program.exitCode
+  override def run = program.exitCode
 
 }
