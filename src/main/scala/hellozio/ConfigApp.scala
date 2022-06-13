@@ -17,25 +17,29 @@
 package hellozio
 
 import zio._
-
-import zio.config.magnolia.DeriveConfigDescriptor.descriptor
+import zio.config._
+import zio.config.magnolia.descriptor
 import java.net.URI
+
+import com.typesafe.config.ConfigFactory
+import zio.config.typesafe._
 
 final case class Test(me: String, uri: URI)
 final case class HelloConfig(port: Int, test: Test)
 
 object ConfigApp extends ZIOAppDefault {
 
-  override def run = ???
+  override def run = program
 
-  private val configDescriptor = descriptor[HelloConfig]
-  /*
-  private val config = TypesafeConfig.fromTypesafeConfig(ConfigFactory.load(), configDescriptor)
+  private implicit val configDescriptor = descriptor[HelloConfig]
 
   private val program = for {
-    conf <- getConfig[HelloConfig]
-    _    <- putStrLn(f"Hello on ${conf.port}%d ${conf.test} ")
+    conf <- read(
+      configDescriptor from ConfigSource.fromTypesafeConfig(
+        ZIO.attempt(ConfigFactory.defaultApplication())
+      )
+    )
+    _ <- Console.printLine(f"Hello on ${conf.port}%d ${conf.test} ")
   } yield ()
-   */
 
 }
