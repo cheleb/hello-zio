@@ -10,13 +10,13 @@ inThisBuild(Seq(
 // Projects
 // *****************************************************************************
 
-inThisBuild(
-  Seq(
-    run / javaOptions += "-agentpath:/Applications/YourKit-Java-Profiler-2021.11.app/Contents/Resources/bin/mac/libyjpagent.dylib",
-    run / fork := true,
-    connectInput in run := true
-  )
-)
+// inThisBuild(
+//   Seq(
+//     run / javaOptions += "-agentpath:/Applications/YourKit-Java-Profiler-2022.3.app/Contents/Resources/bin/mac/libyjpagent.dylib",
+//     run / fork := true,
+//     connectInput in run := true
+//   )
+// )
 
 lazy val `hello-zio` =
   project

@@ -31,11 +31,14 @@ object WebSocketBridge extends ZIOAppDefault {
   def useWebSocket(txt: String, queue: Queue[WebSocketFrame])(
       ws: WebSocket[RIO[Console, *]]
   ): RIO[Console, Unit] = {
-    def send(txt: String) = ws.sendText(txt)
+    def send(txt: String) = ws.sendText(txt).timeout(1.second)
     val receive = ws
       .receiveText()
-      .flatMap { t =>
-        Console.printLine(s"----> $t ---->") <* queue.offer(WebSocketFrame.text(t))
+      .timeout(3.second)
+      .flatMap {
+        case Some(t) =>
+          Console.printLine(s"----> $t ---->") <* queue.offer(WebSocketFrame.text(t))
+        case None => ZIO.logError("Timeout on receive") *> ZIO.fail("Boom")
       }
 
     ZIO.debug("Degin") *> send(txt) *> receive.forever.ignore *> ZIO.debug("end") <* queue
@@ -49,22 +52,24 @@ object WebSocketBridge extends ZIOAppDefault {
   def forwardAndPrint(
       txt: String,
       queue: Queue[WebSocketFrame]
-  ): RIO[Console with SttpClient, SttpResponse[Unit]] =
+  ) =
     sendR(
       basicRequest
         .get(uri"ws://localhost:8091/subscriptions")
         .response(asWebSocketAlways(useWebSocket(txt, queue)))
     )
 
-  private def socket() =
+  private val socket =
     Socket.collect[WebSocketFrame] {
       case WebSocketFrame.Ping => ZStream.succeed(WebSocketFrame.pong)
       case WebSocketFrame.Pong => ZStream.succeed(WebSocketFrame.ping)
-      case fr @ WebSocketFrame.Text(txt) =>
+      case WebSocketFrame.Text(txt) =>
         val z = for {
-          queue <- ZStream.fromZIO(Queue.unbounded[WebSocketFrame])
-          _     <- ZStream.fromZIO(forwardAndPrint(txt, queue))
-          zz    <- ZStream.fromQueue(queue)
+          queue <- ZStream.fromZIO(Queue.bounded[WebSocketFrame](1))
+          zz <- ZStream
+            .fromZIO(forwardAndPrint(txt, queue))
+            .mergeRight(ZStream.fromQueue(queue))
+
         } yield zz
 
         z ++ ZStream.succeed(WebSocketFrame.close(1000, None))
@@ -74,7 +79,7 @@ object WebSocketBridge extends ZIOAppDefault {
     Http.collectZIO[Request] {
       case Method.GET -> !! / "greet" / name => ZIO.succeed(Response.text(s"Greetings {$name}!"))
       case Method.GET -> !! / "subscriptions" =>
-        socket().toResponse
+        socket.toResponse
     }
 
   override def run =

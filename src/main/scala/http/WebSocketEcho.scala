@@ -30,6 +30,7 @@ object WebSocketEcho extends ZIOAppDefault {
       case fr @ WebSocketFrame.Text(txt) =>
         ZStream
           .range(1, 5)
+          .tap(i => ZIO.sleep(i.second))
           .map(i => WebSocketFrame.Text(s"Echo ((( $i )))"))
           .schedule(Schedule.spaced(1.second)) ++ ZStream.succeed(WebSocketFrame.close(1000, None))
     }
@@ -40,5 +41,5 @@ object WebSocketEcho extends ZIOAppDefault {
       case Method.GET -> !! / "subscriptions" => socket.toResponse
     }
 
-  override def run = Server.start(8091, app).exitCode
+  override def run = Server.start(8091, app)
 }

@@ -23,30 +23,30 @@ import zio._
 import zio.Console
 
 object WebSocketZio extends ZIOAppDefault {
-  def useWebSocket(ws: WebSocket[RIO[Console, *]]): RIO[Console, Unit] = {
-    def send(i: Int) = ws.sendText(s"Hello $i!")
+  def useWebSocket(n: Int)(ws: WebSocket[RIO[Console, *]]): RIO[Console, Unit] = {
+    def send(i: Int) = ws.sendText(s"$i")
     val receive = ws
       .receiveText()
-      .flatMap { t =>
-        Console.printLine(s"RECEIVED: $t")
-      }
+      .flatMap(ZIO.debug(_))
 
-    send(1) *> receive.forever.ignore
+    send(n) *> receive.forever.ignore
   }
 
   // create a description of a program, which requires two dependencies in the environment:
   // the SttpClient, and the Console
-  val sendAndPrint: RIO[Console with SttpClient, Response[Unit]] =
+  def sendAndPrint(n: Int = 1): RIO[Console with SttpClient, Response[Unit]] =
     sendR(
       basicRequest
         .get(uri"ws://localhost:8090/subscriptions")
-        .response(asWebSocketAlways(useWebSocket))
+        .response(asWebSocketAlways(useWebSocket(n)))
     )
 
   override def run =
-    // provide an implementation for the SttpClient dependency; other dependencies are
-    // provided by Zio
-    sendAndPrint
-      .provide(AsyncHttpClientZioBackend.layer(), Console.live)
+    for {
+      args <- getArgs
+      _ <- sendAndPrint(args.headOption.flatMap(_.toIntOption).getOrElse(1))
+        .provide(AsyncHttpClientZioBackend.layer(), Console.live)
+
+    } yield ()
 
 }

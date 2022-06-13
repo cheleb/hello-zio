@@ -29,9 +29,11 @@ object WebSocketAdvanced extends ZIOAppDefault {
 
   private val echo = Socket.collect[WebSocketFrame] { case WebSocketFrame.Text(text) =>
     ZStream
-      .repeat(WebSocketFrame.text(s"Received: $text"))
-      .schedule(Schedule.spaced(1 second))
-      .take(3)
+      .range(0, text.toIntOption.getOrElse(1))
+      .map(i => s"Echo ((( $i )))")
+      .tap(message => ZIO.debug(message))
+      .map(message => WebSocketFrame.text(message))
+      .schedule(Schedule.spaced(1 second)) ++ ZStream.succeed(WebSocketFrame.close(1000, None))
   }
 
   private val fooBar = Socket.collect[WebSocketFrame] {
@@ -67,8 +69,8 @@ object WebSocketAdvanced extends ZIOAppDefault {
   private val app =
     Http.collectZIO[Request] {
       case Method.GET -> !! / "greet" / name  => ZIO.attempt(Response.text(s"Greetings ${name}!"))
-      case Method.GET -> !! / "subscriptions" => socketApp.toResponse
+      case Method.GET -> !! / "subscriptions" => ZIO.debug("begin") *> socketApp.toResponse
     }
 
-  override def run = Server.start(8090, app).exitCode
+  override def run = Server.start(8091, app)
 }
