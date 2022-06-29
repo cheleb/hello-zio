@@ -26,6 +26,7 @@ import io.grpc.examples.helloworld.helloworld.ZioHelloworld.GreeterClient
 import io.grpc.examples.helloworld.helloworld.HelloRequest
 import zio.ZIO
 import io.grpc.Status
+import io.grpc.examples.helloworld.helloworld.Corpus
 
 object ExampleClient extends zio.ZIOAppDefault {
 
@@ -38,7 +39,7 @@ object ExampleClient extends zio.ZIOAppDefault {
 
   def myAppLogic: ZIO[GreeterClient with Console, Status, Unit] =
     for {
-      r <- GreeterClient.sayHello(HelloRequest("World"))
+      r <- GreeterClient.sayHello(HelloRequest("World", Corpus.LOCAL))
       _ <- printLine(r.message).orDie
     } yield ()
 

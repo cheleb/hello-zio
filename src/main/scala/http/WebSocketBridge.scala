@@ -29,8 +29,8 @@ import zio.Console
 
 object WebSocketBridge extends ZIOAppDefault {
   def useWebSocket(txt: String, queue: Queue[WebSocketFrame])(
-      ws: WebSocket[RIO[Console, *]]
-  ): RIO[Console, Unit] = {
+      ws: WebSocket[RIO[Any, *]]
+  ): RIO[Any, Unit] = {
     def send(txt: String) = ws.sendText(txt).timeout(1.second)
     val receive = ws
       .receiveText()
@@ -82,6 +82,5 @@ object WebSocketBridge extends ZIOAppDefault {
         socket.toResponse
     }
 
-  override def run =
-    Server.start(8090, app).provide(AsyncHttpClientZioBackend.layer(), Console.live)
+  override def run = Server.start(8090, app).provide(AsyncHttpClientZioBackend.layer())
 }

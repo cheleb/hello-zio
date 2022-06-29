@@ -2,7 +2,6 @@
 
 inThisBuild(Seq(
   scalaVersion := "2.13.8",
-  scalacOptions += "-P:kind-projector:underscore-placeholders",
   run / fork := true
 ))
 
@@ -23,7 +22,9 @@ lazy val `hello-zio` =
     .in(file("."))
     .enablePlugins(AutomateHeaderPlugin)
     .settings(settings)
-    .settings(addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.2" cross CrossVersion.full))
+    .settings(addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.2" cross CrossVersion.full),
+      scalacOptions += "-P:kind-projector:underscore-placeholders",
+)
     .settings(
       libraryDependencies ++= library.zioConfig ++ library.zioGrpc ++ library.zioSchema ++
         Seq(
@@ -58,14 +59,14 @@ lazy val `zio-grpc` = project.in(file("grpc"))
 lazy val library =
   new {
     object Version {
-      val zio = "2.0.0-RC6"
+      val zio = "2.0.0"
       val zhttp = "2.0.0-RC9"
       val zioSagaCore = "0.4.0"
       val grpcVersion = "1.47.0"
       val zioConfig = "3.0.0-RC9"
       val zioSchema = "0.2.0-RC6-2"
-      val zioJson = "0.3.0-RC8"
-      val zioPrelude = "1.0.0-RC14"
+      val zioJson = "0.3.0-RC9"
+      val zioPrelude = "1.0.0-RC15"
       val logback = "1.2.11"
 
     }
@@ -83,11 +84,11 @@ lazy val library =
     )
     val zioStream = "dev.zio" %% "zio-streams" % Version.zio
     val zioManaged = "dev.zio" %% "zio-managed" % Version.zio
-    val zioKafka = "dev.zio" %% "zio-kafka"   % "0.17.0"
+    val zioKafka = "dev.zio" %% "zio-kafka"   % "2.0.0-M3"
     val zioPrelude = "dev.zio" %% "zio-prelude"   % Version.zioPrelude
     val zioSchema = Seq("zio-schema", "zio-schema-derivation").map("dev.zio" %% _  % Version.zioSchema)
     val zioJson = "dev.zio" %% "zio-json" % Version.zioJson
-    val zioPrometheus = "dev.zio" %% "zio-metrics-prometheus" % "1.0.13"
+    val zioPrometheus = "dev.zio" %% "zio-metrics-prometheus" % "2.0.0-RC6"
     val jacksonDatabind = "com.fasterxml.jackson.core" % "jackson-databind" % "2.13.3"
   }
 

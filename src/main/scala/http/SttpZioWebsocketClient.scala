@@ -20,10 +20,9 @@ import sttp.client3._
 import sttp.client3.asynchttpclient.zio._
 import sttp.ws.WebSocket
 import zio._
-import zio.Console
 
 object WebSocketZio extends ZIOAppDefault {
-  def useWebSocket(n: Int)(ws: WebSocket[RIO[Console, *]]): RIO[Console, Unit] = {
+  def useWebSocket(n: Int)(ws: WebSocket[RIO[Any, *]]): RIO[Any, Unit] = {
     def send(i: Int) = ws.sendText(s"$i")
     val receive = ws
       .receiveText()
@@ -34,7 +33,7 @@ object WebSocketZio extends ZIOAppDefault {
 
   // create a description of a program, which requires two dependencies in the environment:
   // the SttpClient, and the Console
-  def sendAndPrint(n: Int = 1): RIO[Console with SttpClient, Response[Unit]] =
+  def sendAndPrint(n: Int = 1): RIO[SttpClient, Response[Unit]] =
     sendR(
       basicRequest
         .get(uri"ws://localhost:8090/subscriptions")
@@ -45,7 +44,7 @@ object WebSocketZio extends ZIOAppDefault {
     for {
       args <- getArgs
       _ <- sendAndPrint(args.headOption.flatMap(_.toIntOption).getOrElse(1))
-        .provide(AsyncHttpClientZioBackend.layer(), Console.live)
+        .provide(AsyncHttpClientZioBackend.layer())
 
     } yield ()
 
