@@ -84,11 +84,11 @@ lazy val library =
     )
     val zioStream = "dev.zio" %% "zio-streams" % Version.zio
     val zioManaged = "dev.zio" %% "zio-managed" % Version.zio
-    val zioKafka = "dev.zio" %% "zio-kafka"   % "2.0.0-M3"
+    val zioKafka = "dev.zio" %% "zio-kafka"   % "2.0.0"
     val zioPrelude = "dev.zio" %% "zio-prelude"   % Version.zioPrelude
     val zioSchema = Seq("zio-schema", "zio-schema-derivation").map("dev.zio" %% _  % Version.zioSchema)
     val zioJson = "dev.zio" %% "zio-json" % Version.zioJson
-    val zioPrometheus = "dev.zio" %% "zio-metrics-prometheus" % "2.0.0-RC6"
+    val zioPrometheus = "dev.zio" %% "zio-metrics-prometheus" % "2.0.0"
     val jacksonDatabind = "com.fasterxml.jackson.core" % "jackson-databind" % "2.13.3"
   }
 

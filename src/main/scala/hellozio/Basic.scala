@@ -17,9 +17,13 @@
 package hellozio
 
 import zio._
+import zio.Console._
 
 object Basic extends ZIOAppDefault {
 
-  override def run = ???
+  override def run: ZIO[Environment with ZIOAppArgs with Scope, Any, Any] =
+    ZIO.succeed("cMo").race(ZIO.succeed("oNo"))
+    .flatMap(res=>printLine(res))
+    .withFinalizer(_ => ZIO.debug("bye..."))
 
 }
