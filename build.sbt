@@ -1,7 +1,7 @@
 
 
 inThisBuild(Seq(
-  scalaVersion := "2.13.8",
+  scalaVersion := "3.1.2",
   run / fork := true
 ))
 
@@ -22,9 +22,9 @@ lazy val `hello-zio` =
     .in(file("."))
     .enablePlugins(AutomateHeaderPlugin)
     .settings(settings)
-    .settings(addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.2" cross CrossVersion.full),
-      scalacOptions += "-P:kind-projector:underscore-placeholders",
-)
+//    .settings(addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.2" cross CrossVersion.full),
+//      scalacOptions += "-P:kind-projector:underscore-placeholders",
+//)
     .settings(
       libraryDependencies ++= library.zioConfig ++ library.zioGrpc ++ library.zioSchema ++
         Seq(
@@ -59,19 +59,19 @@ lazy val `zio-grpc` = project.in(file("grpc"))
 lazy val library =
   new {
     object Version {
-      val zio = "2.0.0"
-      val zhttp = "2.0.0-RC9"
-      val zioSagaCore = "0.4.0"
+      val zio = "2.0.1"
+      val zhttp = "2.0.0-RC10"
+      val zioSagaCore = "0.5.0"
       val grpcVersion = "1.47.0"
       val zioConfig = "3.0.0-RC9"
-      val zioSchema = "0.2.0-RC6-2"
-      val zioJson = "0.3.0-RC9"
+      val zioSchema = "0.2.1"
+      val zioJson = "0.3.0-RC11"
       val zioPrelude = "1.0.0-RC15"
       val logback = "1.2.11"
 
     }
     val logback = "ch.qos.logback" % "logback-classic" % Version.logback
-    val sttpTapirClient =   "com.softwaremill.sttp.client3" %% "async-http-client-backend-zio" % "3.6.2"
+    val sttpTapirClient =   "com.softwaremill.sttp.client3" %% "async-http-client-backend-zio" % "3.7.5"
     val zio        = "dev.zio"        %% "zio"        % Version.zio
     val zhttp      = "io.d11"         %% "zhttp"      % Version.zhttp
     val zioTest    = "dev.zio"          %% "zio-test"     % Version.zio
@@ -104,7 +104,7 @@ lazy val settings =
 lazy val commonSettings =
   Seq(
     // scalaVersion from .travis.yml via sbt-travisci
-     scalaVersion := "2.13.8",
+
     //scalaVersion := "3.0.0-RC1",
     organization := "io.metabookmarks",
     organizationName := "Olivier NOUGUIER",

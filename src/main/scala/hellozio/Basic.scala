@@ -22,8 +22,10 @@ import zio.Console._
 object Basic extends ZIOAppDefault {
 
   override def run: ZIO[Environment with ZIOAppArgs with Scope, Any, Any] =
-    ZIO.succeed("cMo").race(ZIO.succeed("oNo"))
-    .flatMap(res=>printLine(res))
-    .withFinalizer(_ => ZIO.debug("bye..."))
+    (ZIO.sleep(100.millisecond) *> ZIO
+      .succeed("Oh yes"))
+      .race(ZIO.succeed("Oh no"))
+      .flatMap(res => printLine(res))
+      .withFinalizer(_ => ZIO.debug("bye..."))
 
 }

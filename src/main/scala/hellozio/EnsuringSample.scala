@@ -23,7 +23,7 @@ import zio.Console._
 import java.io.File
 import java.io.PrintWriter
 import java.io.Writer
-
+import scala.language.postfixOps
 object EnsuringSample extends ZIOAppDefault {
 
   override def run = myAppLogic

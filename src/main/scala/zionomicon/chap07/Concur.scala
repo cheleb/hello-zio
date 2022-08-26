@@ -20,6 +20,8 @@ import zio._
 import zio.Console._
 import zio.ZIOAppDefault
 
+import scala.language.postfixOps
+
 object Concur extends ZIOAppDefault {
 
   private val zio1 = ZIO.sleep(100 millis) *> ZIO.succeed(1)

@@ -20,6 +20,8 @@ import zio._
 import zio.Console._
 import zio.ZIOAppDefault
 
+import scala.language.postfixOps
+
 object TimerApp extends ZIOAppDefault {
 
   val goShopping: URIO[Any, Unit] =

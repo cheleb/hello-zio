@@ -18,6 +18,8 @@ package zionomicon.chap08
 
 import zio._
 
+import scala.language.postfixOps
+
 object Forking extends ZIOAppDefault {
 
   val grandChild: UIO[Unit] = ZIO.succeed(println("Hello, World!"))

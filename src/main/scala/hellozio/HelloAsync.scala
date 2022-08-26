@@ -44,6 +44,6 @@ object HelloAsync extends ZIOAppDefault {
     _    <- Console.printLine(s"Hi $user")
   } yield ()
 
-  override def run: ZIO[Any, Serializable, Unit] = program
+  override def run = program
 
 }

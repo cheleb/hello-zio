@@ -31,7 +31,8 @@ object ConfigApp extends ZIOAppDefault {
 
   override def run = program
 
-  private implicit val configDescriptor = descriptor[HelloConfig]
+  private implicit val configDescriptor: config.ConfigDescriptor[HelloConfig] =
+    descriptor[HelloConfig]
 
   private val program = for {
     conf <- read(

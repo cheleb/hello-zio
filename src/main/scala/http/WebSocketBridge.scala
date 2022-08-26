@@ -16,71 +16,71 @@
 
 package http
 
-import zio._
 import zhttp.http._
-import zhttp.service.Server
-import zhttp.socket.{ Socket, WebSocketFrame }
-import zio.stream.ZStream
-import sttp.client3.{ Response => SttpResponse, UriContext, asWebSocketAlways, basicRequest }
-
-import sttp.client3.asynchttpclient.zio._
-import sttp.ws.WebSocket
+import zhttp.service.ChannelEvent.{ ChannelRead, ExceptionCaught, UserEvent, UserEventTriggered }
+import zhttp.service.{ Channel, ChannelEvent, Server }
+import zhttp.socket._
+import zio._
 import zio.Console
 
 object WebSocketBridge extends ZIOAppDefault {
-  def useWebSocket(txt: String, queue: Queue[WebSocketFrame])(
-      ws: WebSocket[RIO[Any, *]]
-  ): RIO[Any, Unit] = {
-    def send(txt: String) = ws.sendText(txt).timeout(1.second)
-    val receive = ws
-      .receiveText()
-      .timeout(3.second)
-      .flatMap {
-        case Some(t) =>
-          Console.printLine(s"----> $t ---->") <* queue.offer(WebSocketFrame.text(t))
-        case None => ZIO.logError("Timeout on receive") *> ZIO.fail("Boom")
-      }
 
-    ZIO.debug("Degin") *> send(txt) *> receive.forever.ignore *> ZIO.debug("end") <* queue
-      .offer(
-        WebSocketFrame.close(1000, None)
-      )
-  }
-
-  // create a description of a program, which requires two dependencies in the environment:
-  // the SttpClient, and the Console
-  def forwardAndPrint(
-      txt: String,
-      queue: Queue[WebSocketFrame]
-  ) =
-    sendR(
-      basicRequest
-        .get(uri"ws://localhost:8091/subscriptions")
-        .response(asWebSocketAlways(useWebSocket(txt, queue)))
-    )
-
-  private val socket =
-    Socket.collect[WebSocketFrame] {
-      case WebSocketFrame.Ping => ZStream.succeed(WebSocketFrame.pong)
-      case WebSocketFrame.Pong => ZStream.succeed(WebSocketFrame.ping)
-      case WebSocketFrame.Text(txt) =>
-        val z = for {
-          queue <- ZStream.fromZIO(Queue.bounded[WebSocketFrame](1))
-          zz <- ZStream
-            .fromZIO(forwardAndPrint(txt, queue))
-            .mergeRight(ZStream.fromQueue(queue))
-
-        } yield zz
-
-        z ++ ZStream.succeed(WebSocketFrame.close(1000, None))
+  val messageFilter: Http[Any, Nothing, WebSocketChannelEvent, (Channel[WebSocketFrame], String)] =
+    Http.collect[WebSocketChannelEvent] {
+      case ChannelEvent(channel, ChannelRead(WebSocketFrame.Text(message))) =>
+        (channel, message)
     }
 
-  private val app =
+  val channelSocket: Http[Any, Throwable, WebSocketChannelEvent, Unit] =
+    Http.collectZIO[WebSocketChannelEvent] {
+
+      // Send a "greeting" message to the server once the connection is established
+      case ChannelEvent(ch, UserEventTriggered(UserEvent.HandshakeComplete)) =>
+        ch.writeAndFlush(WebSocketFrame.text("Greetings!"))
+
+      // Log when the channel is getting closed
+      case ChannelEvent(_, ChannelRead(WebSocketFrame.Close(status, reason))) =>
+        Console.printLine("Closing channel with status: " + status + " and reason: " + reason)
+
+      // Print the exception if it's not a normal close
+      case ChannelEvent(_, ExceptionCaught(cause)) =>
+        Console.printLine(s"Channel error!: ${cause.getMessage}")
+    }
+
+  val messageSocket: Http[Any, Throwable, WebSocketChannelEvent, Unit] = messageFilter >>>
+    Http.collectZIO[(WebSocketChannel, String)] {
+      case (ch, "end") => ch.close()
+
+      // Send a "bar" if the server sends a "foo"
+      case (ch, "foo") => ch.writeAndFlush(WebSocketFrame.text("bar"))
+
+      // Send a "foo" if the server sends a "bar"
+      case (ch, "bar") => ch.writeAndFlush(WebSocketFrame.text("foo"))
+
+      // Echo the same message 10 times if it's not "foo" or "bar"
+      // Improve performance by writing multiple frames at once
+      // And flushing it on the channel only once.
+      case (ch, text) =>
+        ch.write(WebSocketFrame.text(text)).repeatN(10) *> ch.flush
+    }
+
+  val httpSocket: Http[Any, Throwable, WebSocketChannelEvent, Unit] =
+    messageSocket ++ channelSocket
+
+  val protocol = SocketProtocol.subProtocol("json") // Setup protocol settings
+
+  val decoder = SocketDecoder.allowExtensions // Setup decoder settings
+
+  val socketApp: SocketApp[Any] = // Combine all channel handlers together
+    httpSocket.toSocketApp
+      .withDecoder(decoder)   // Setup websocket decoder config
+      .withProtocol(protocol) // Setup websocket protocol config
+
+  val app: Http[Any, Nothing, Request, Response] =
     Http.collectZIO[Request] {
-      case Method.GET -> !! / "greet" / name => ZIO.succeed(Response.text(s"Greetings {$name}!"))
-      case Method.GET -> !! / "subscriptions" =>
-        socket.toResponse
+      case Method.GET -> !! / "greet" / name  => ZIO.succeed(Response.text(s"Greetings ${name}!"))
+      case Method.GET -> !! / "subscriptions" => socketApp.toResponse
     }
 
-  override def run = Server.start(8090, app).provide(AsyncHttpClientZioBackend.layer())
+  override val run = Server.start(8090, app)
 }

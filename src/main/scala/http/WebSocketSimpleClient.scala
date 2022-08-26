@@ -16,10 +16,11 @@
 
 package http
 
-import zhttp.service.{ ChannelFactory, EventLoopGroup }
-import zhttp.socket.{ Socket, WebSocketFrame }
+import zhttp.http.{ Http, Response }
+import zhttp.service.ChannelEvent.{ ChannelRead, UserEvent, UserEventTriggered }
+import zhttp.service.{ ChannelEvent, ChannelFactory, EventLoopGroup }
+import zhttp.socket.{ WebSocketChannelEvent, WebSocketFrame }
 import zio._
-import zio.stream.ZStream
 
 object WebSocketSimpleClient extends ZIOAppDefault {
 
@@ -28,24 +29,28 @@ object WebSocketSimpleClient extends ZIOAppDefault {
 
   val url = "ws://localhost:8090/subscriptions"
 
-  val app = for {
+  val httpSocket = for {
     so <-
-      Socket
-        .collect[WebSocketFrame] {
-          case WebSocketFrame.Ping =>
-            ZStream.succeed(WebSocketFrame.pong)
-          case WebSocketFrame.Text("BAZ") =>
-            ZStream.fromZIO(Console.printLine("ooo\n")) *>
-            ZStream.succeed(WebSocketFrame.close(1000))
-          case frame =>
-            ZStream.fromZIO(Console.printLine("ooo\n")) *>
-            ZStream.succeed(frame)
-        }
-        // .toSocketApp
-        .connect(url)
+      Http
 
-    _ <- Console.readLine
+        // Listen for all websocket channel events
+        .collectZIO[WebSocketChannelEvent] {
+
+          case ChannelEvent(ch, UserEventTriggered(UserEvent.HandshakeComplete)) =>
+            ch.writeAndFlush(WebSocketFrame.text("foo"))
+
+          // Send a "bar" if the server sends a "foo"
+          case ChannelEvent(ch, ChannelRead(WebSocketFrame.Text("foo"))) =>
+            ch.writeAndFlush(WebSocketFrame.text("bar"))
+
+          // Close the connection if the server sends a "bar"
+          case ChannelEvent(ch, ChannelRead(WebSocketFrame.Text("bar"))) =>
+            ZIO.succeed(println("Goodbye!")) *> ch.writeAndFlush(WebSocketFrame.close(1000))
+
+        }
   } yield ()
 
+  val app: ZIO[Any with EventLoopGroup with ChannelFactory with Scope, Throwable, Response] =
+    httpSocket.toSocketApp.connect(url)
   override def run = app.provide(env).exitCode
 }

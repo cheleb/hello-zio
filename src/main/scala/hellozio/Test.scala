@@ -17,41 +17,43 @@
 package hellozio
 
 import zio._
-import zio.Console._
 
 trait UserRepo {
-  def getIt(id: Int): Task[String]
+  def getName(id: Int): RIO[UserRepo, String]
 }
 
-object UserRepo extends UserRepo {
+case class UserRepoImpl(dbname: String) extends UserRepo {
 
-  override def getIt(id: Int): Task[String] = ???
-
-}
-
-case class PostgreSQLRepo(dbname: String) extends UserRepo {
-
-  override def getIt(id: Int): Task[String] = ZIO.succeed(s"Agnes $id")
+  override def getName(id: Int): RIO[UserRepo, String] = ZIO.succeed(s"User $id")
 
 }
 
-object PostgreSQLRepo {
-  val layer = ZLayer {
-    ZIO.succeed(new PostgreSQLRepo("olivier"))
+object UserRepo {
+
+  val live = ZLayer {
+    ZIO.succeed(new UserRepoImpl("test"))
+
   }
+
+  def getName(id: Int): RIO[UserRepo, String] = ZIO.serviceWithZIO(_.getName(id))
+
 }
 
 object TestApp extends ZIOAppDefault {
 
-  val program: ZIO[UserRepo, Throwable, Unit] = for {
-    _    <- printLine("Accessible rocks")
-    name <- UserRepo.getIt(1)
-    _    <- printLine(s"Hello $name")
+  val program = for {
+
+    name <- UserRepo.getName(1)
+
+    _ <- Console.printLine(s"Hello $name")
+
   } yield ()
 
   override def run =
-    program
-      .provide(PostgreSQLRepo.layer)
-      .exitCode
+    for {
+      _ <- Console.printLine("---------")
+      _ <- program.provideSomeLayer(UserRepo.live)
+      _ <- Console.printLine("+++++++++")
+    } yield ()
 
 }
