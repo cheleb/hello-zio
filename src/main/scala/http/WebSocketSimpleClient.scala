@@ -25,32 +25,32 @@ import zio._
 object WebSocketSimpleClient extends ZIOAppDefault {
 
   // Setup client envs
-  val env = Scope.default ++ EventLoopGroup.auto() ++ ChannelFactory.auto
+  val env = EventLoopGroup.auto() ++ ChannelFactory.auto ++ Scope.default
 
-  val url = "ws://localhost:8090/subscriptions"
+  val url = "ws://localhost:8091/subscriptions"
 
-  val httpSocket = for {
-    so <-
-      Http
+  val httpSocket: Http[Any, Throwable, WebSocketChannelEvent, Unit] =
+    Http
 
-        // Listen for all websocket channel events
-        .collectZIO[WebSocketChannelEvent] {
+      // Listen for all websocket channel events
+      .collectZIO[WebSocketChannelEvent] {
 
-          case ChannelEvent(ch, UserEventTriggered(UserEvent.HandshakeComplete)) =>
-            ch.writeAndFlush(WebSocketFrame.text("foo"))
+        // Send a "foo" message to the server once the connection is established
+        case ChannelEvent(ch, UserEventTriggered(UserEvent.HandshakeComplete)) =>
+          ch.writeAndFlush(WebSocketFrame.text("foo"))
 
-          // Send a "bar" if the server sends a "foo"
-          case ChannelEvent(ch, ChannelRead(WebSocketFrame.Text("foo"))) =>
-            ch.writeAndFlush(WebSocketFrame.text("bar"))
+        // Send a "bar" if the server sends a "foo"
+        case ChannelEvent(ch, ChannelRead(WebSocketFrame.Text("foo"))) =>
+          ch.writeAndFlush(WebSocketFrame.text("bar"))
 
-          // Close the connection if the server sends a "bar"
-          case ChannelEvent(ch, ChannelRead(WebSocketFrame.Text("bar"))) =>
-            ZIO.succeed(println("Goodbye!")) *> ch.writeAndFlush(WebSocketFrame.close(1000))
-
-        }
-  } yield ()
+        // Close the connection if the server sends a "bar"
+        case ChannelEvent(ch, ChannelRead(WebSocketFrame.Text("bar"))) =>
+          ZIO.succeed(println("Goodbye!")) *> ch.writeAndFlush(WebSocketFrame.close(1000))
+      }
 
   val app: ZIO[Any with EventLoopGroup with ChannelFactory with Scope, Throwable, Response] =
     httpSocket.toSocketApp.connect(url)
-  override def run = app.provide(env).exitCode
+
+  val run = app.provideLayer(env)
+
 }

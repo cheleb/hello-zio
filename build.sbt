@@ -1,7 +1,7 @@
 
 
 inThisBuild(Seq(
-  scalaVersion := "3.1.2",
+  scalaVersion := "3.2.0",
   run / fork := true
 ))
 
@@ -59,8 +59,8 @@ lazy val `zio-grpc` = project.in(file("grpc"))
 lazy val library =
   new {
     object Version {
-      val zio = "2.0.1"
-      val zhttp = "2.0.0-RC10"
+      val zio = "2.0.2"
+      val zhttp = "2.0.0-RC11"
       val zioSagaCore = "0.5.0"
       val grpcVersion = "1.47.0"
       val zioConfig = "3.0.0-RC9"
@@ -71,7 +71,7 @@ lazy val library =
 
     }
     val logback = "ch.qos.logback" % "logback-classic" % Version.logback
-    val sttpTapirClient =   "com.softwaremill.sttp.client3" %% "async-http-client-backend-zio" % "3.7.5"
+    val sttpTapirClient =   "com.softwaremill.sttp.client3" %% "async-http-client-backend-zio" % "3.7.6"
     val zio        = "dev.zio"        %% "zio"        % Version.zio
     val zhttp      = "io.d11"         %% "zhttp"      % Version.zhttp
     val zioTest    = "dev.zio"          %% "zio-test"     % Version.zio
@@ -114,9 +114,7 @@ lazy val commonSettings =
       "-unchecked",
       "-deprecation",
       "-language:_",
-      "-target:jvm-1.8",
-      "-encoding", "UTF-8",
-      "-Ywarn-unused:imports",
+      "-encoding", "UTF-8"
     ),
     Compile / unmanagedSourceDirectories := Seq((Compile / scalaSource).value),
     Test / unmanagedSourceDirectories := Seq((Test / scalaSource).value),

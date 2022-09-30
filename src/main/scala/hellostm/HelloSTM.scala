@@ -21,9 +21,9 @@ import zio.stm._
 
 object HelloSTM extends ZIOAppDefault {
 
-  override def run: ZIO[Environment with ZIOAppArgs with Scope, Any, Any] =
+  override def run =
     for {
-      from <- TRef.makeCommit(10)
+      from <- TRef.makeCommit(1000)
       to   <- TRef.makeCommit(1000)
       res  <- transfer(from, to, 100).ignore
       endz <- (from.get <*> to.get).commit

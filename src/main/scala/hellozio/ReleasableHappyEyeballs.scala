@@ -38,7 +38,9 @@ object ReleasableHappyEyeballs {
       }
       _     <- HappyEyeballs(enqueingTasks, delay)
       chunk <- successful.takeAll
-      first :: others = chunk.toList
+
+      first  = chunk.toList.head
+      others = chunk.toList.tail
       _ <- ZIO.foreach(others)(releaseExtra)
     } yield first
 }

@@ -67,9 +67,9 @@ object WebSocketBridge extends ZIOAppDefault {
   val httpSocket: Http[Any, Throwable, WebSocketChannelEvent, Unit] =
     messageSocket ++ channelSocket
 
-  val protocol = SocketProtocol.subProtocol("json") // Setup protocol settings
+  val protocol = SocketProtocol(Some("json")) // Setup protocol settings
 
-  val decoder = SocketDecoder.allowExtensions // Setup decoder settings
+  val decoder = SocketDecoder.default // Setup decoder settings
 
   val socketApp: SocketApp[Any] = // Combine all channel handlers together
     httpSocket.toSocketApp

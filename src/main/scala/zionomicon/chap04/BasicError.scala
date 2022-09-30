@@ -48,17 +48,7 @@ object CatchAllCauseExercice extends ZIOAppDefault {
       a => ZIO.succeed(a)
     )
 
-  def logFailures[R, E, A](zio: ZIO[R, E, A]): ZIO[R, E, A] =
-    zio
-      .foldCauseZIO(
-        ce =>
-          (ce.failureOrCause match {
-            case Left(value)  => ZIO.fail(value)
-            case Right(value) => ZIO.failCause(value)
-          }).tapErrorCause(c => ZIO.succeed(println(c.prettyPrint))),
-        a => ZIO.succeed(a)
-      )
-
+  def logFailures[R, E, A](zio: ZIO[R, E, A]): ZIO[R, E, A] = ???
   def onAnyFailure[R, E, A](zio: ZIO[R, E, A], handler: ZIO[R, E, Any]): ZIO[R, E, A] =
     zio.foldCauseZIO(r => handler *> ZIO.failCause(r), a => ZIO.succeed(a))
 
