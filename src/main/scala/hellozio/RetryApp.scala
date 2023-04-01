@@ -31,3 +31,14 @@ object RetryApp extends ZIOAppDefault {
 
   override def run = program.exitCode
 }
+
+object RetryApp2 extends ZIOAppDefault {
+
+  val program = ZIO
+    .fromTry(throw new RuntimeException("poum"))
+    .tapError(e => Console.printLine(e.getMessage()))
+    .retry(Schedule.exponential(100.milliseconds))
+    .timeout(15.seconds) *> Console.printLine("...Plaf")
+
+  override def run = program.exitCode
+}

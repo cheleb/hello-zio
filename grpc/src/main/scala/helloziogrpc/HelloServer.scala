@@ -25,14 +25,15 @@ import zio.Console._
 import io.grpc.examples.helloworld.helloworld.ZioHelloworld.ZGreeter
 import io.grpc.examples.helloworld.helloworld.{ HelloReply, HelloRequest }
 
-object GreeterImpl extends ZGreeter[Any, Any] {
+object GreeterImpl extends ZGreeter[Any] {
   def sayHello(
       request: HelloRequest
-  ): ZIO[Any, Status, HelloReply] = ZIO.scoped {
-    printLine(s"Got request: ${request.name}").orDie *>
-    ZIO.sleep(1.second).repeatN(10).withFinalizer(_ => ZIO.debug("Arg..")) *>
-    ZIO.succeed(HelloReply(s"Hello, ${request.name}"))
-  }
+  ): ZIO[Any, Status, HelloReply] =
+    ZIO.scoped {
+      printLine(s"Got request: ${request.name}").orDie *>
+      ZIO.sleep(1.second).repeatN(100).withFinalizer(_ => ZIO.debug("Arg..")) *>
+      ZIO.succeed(HelloReply(s"Hello, ${request.name}"))
+    }
 }
 
 object HelloWorldServer extends ServerMain {

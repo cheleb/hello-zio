@@ -16,12 +16,14 @@
 
 package http
 
-import zhttp.http._
-import zhttp.service.ChannelEvent.{ ChannelRead, ExceptionCaught, UserEvent, UserEventTriggered }
-import zhttp.service.{ Channel, ChannelEvent, Server }
-import zhttp.socket._
+import zio._
+import zio.http.ChannelEvent.{ ChannelRead, ExceptionCaught, UserEvent, UserEventTriggered }
+import zio.http._
+import zio.http.model.Method
+import zio.http.socket._
 import zio._
 import zio.Console
+import zio.stream.ZStream
 
 object WebSocketBridge extends ZIOAppDefault {
 
@@ -36,7 +38,13 @@ object WebSocketBridge extends ZIOAppDefault {
 
       // Send a "greeting" message to the server once the connection is established
       case ChannelEvent(ch, UserEventTriggered(UserEvent.HandshakeComplete)) =>
-        ch.writeAndFlush(WebSocketFrame.text("Greetings!"))
+        ZStream
+          .range(1, 10)
+          .mapZIO(i =>
+            ZIO.sleep(1.second) *> ch.writeAndFlush(WebSocketFrame.text(s"Hello from client $i"))
+          )
+          .runDrain
+      // ch.writeAndFlush(WebSocketFrame.text("Greetings!"))
 
       // Log when the channel is getting closed
       case ChannelEvent(_, ChannelRead(WebSocketFrame.Close(status, reason))) =>
@@ -49,7 +57,7 @@ object WebSocketBridge extends ZIOAppDefault {
 
   val messageSocket: Http[Any, Throwable, WebSocketChannelEvent, Unit] = messageFilter >>>
     Http.collectZIO[(WebSocketChannel, String)] {
-      case (ch, "end") => ch.close()
+      case (ch, "end\n") => ch.close()
 
       // Send a "bar" if the server sends a "foo"
       case (ch, "foo") => ch.writeAndFlush(WebSocketFrame.text("bar"))
@@ -61,7 +69,7 @@ object WebSocketBridge extends ZIOAppDefault {
       // Improve performance by writing multiple frames at once
       // And flushing it on the channel only once.
       case (ch, text) =>
-        ch.write(WebSocketFrame.text(text)).repeatN(10) *> ch.flush
+        ch.write(WebSocketFrame.text(text)).repeatN(3) *> ch.flush
     }
 
   val httpSocket: Http[Any, Throwable, WebSocketChannelEvent, Unit] =
@@ -82,5 +90,5 @@ object WebSocketBridge extends ZIOAppDefault {
       case Method.GET -> !! / "subscriptions" => socketApp.toResponse
     }
 
-  override val run = Server.start(8090, app)
+  override val run = Server.serve(app).provide(Server.default)
 }

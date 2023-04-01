@@ -16,11 +16,11 @@
 
 package http
 
-import zhttp.http._
-import zhttp.service.ChannelEvent.ChannelRead
-import zhttp.service.{ ChannelEvent, Server }
-import zhttp.socket.{ WebSocketChannelEvent, WebSocketFrame }
 import zio._
+import zio.http.ChannelEvent.{ ChannelRead, ExceptionCaught, UserEvent, UserEventTriggered }
+import zio.http._
+import zio.http.model.Method
+import zio.http.socket._
 
 object WebSocketEcho extends ZIOAppDefault {
   private val socket =
@@ -41,5 +41,5 @@ object WebSocketEcho extends ZIOAppDefault {
       case Method.GET -> !! / "subscriptions" => socket.toSocketApp.toResponse
     }
 
-  override def run = Server.start(8091, app)
+  override def run = Server.serve(app).provide(Server.default)
 }

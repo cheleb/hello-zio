@@ -28,17 +28,26 @@ object BasicStreaming extends ZIOAppDefault {
     _ <- MyZStreamer.stream
       .map(_.toString)
       .foreach(Console.printLine(_))
+    _   <- Cloudifier.stream >>> Cloudifier.sink
     _   <- Console.printLine("Hello, World!")
     res <- MyZStreamer.stream >>> MyZStreamer.sink
     _   <- Console.printLine(s"Result: $res")
   } yield 0
 
-  def run = program.provideLayer(MyZStreamer.live)
+  def run = program.provide(MyZStreamer.live, Cloudifier.live)
 
+}
+
+case class Loco(streamer: MyZStreamer, cloudifier: Cloudifier)
+
+object Loco {
+  val live: ZLayer[MyZStreamer with Cloudifier, Nothing, Loco] =
+    ZLayer.fromFunction((a, b) => Loco(a, b))
 }
 
 @Accessible
 trait MyZStreamer {
+
   def stream: ZStream[Any, Nothing, Int]
   def sink: ZSink[Any, Nothing, Int, Nothing, Int]
 }
@@ -49,7 +58,9 @@ case class MyZStream(i: Int) extends MyZStreamer {
 }
 
 object MyZStreamer {
+
   def stream: ZStream[MyZStreamer, Nothing, Int] = ZStream.serviceWithStream[MyZStreamer](_.stream)
+
   def sink: ZSink[MyZStreamer, Nothing, Int, Nothing, Int] =
     ZSink.serviceWithSink[MyZStreamer](_.sink)
 

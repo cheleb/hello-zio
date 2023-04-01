@@ -16,11 +16,11 @@
 
 package example
 
-import zhttp.http._
-import zhttp.service.ChannelEvent.{ ChannelRead, ExceptionCaught, UserEvent, UserEventTriggered }
-import zhttp.service.{ Channel, ChannelEvent, Server }
-import zhttp.socket._
 import zio._
+import zio.http.ChannelEvent.{ ChannelRead, ExceptionCaught, UserEvent, UserEventTriggered }
+import zio.http._
+import zio.http.model.Method
+import zio.http.socket._
 
 object WebSocketAdvanced extends ZIOAppDefault {
   val messageFilter: Http[Any, Nothing, WebSocketChannelEvent, (Channel[WebSocketFrame], String)] =
@@ -80,5 +80,5 @@ object WebSocketAdvanced extends ZIOAppDefault {
       case Method.GET -> !! / "subscriptions" => socketApp.toResponse
     }
 
-  override val run = Server.start(8090, app)
+  override val run = Server.serve(app).provide(Server.default)
 }

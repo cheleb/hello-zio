@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-package http
-
-import zhttp.http.{ Http, Response }
-import zhttp.service.ChannelEvent.{ ChannelRead, UserEvent, UserEventTriggered }
-import zhttp.service.{ ChannelEvent, ChannelFactory, EventLoopGroup }
-import zhttp.socket.{ WebSocketChannelEvent, WebSocketFrame }
 import zio._
+import zio.http.ChannelEvent.{ ChannelRead, UserEvent, UserEventTriggered }
+import zio.http.socket.{ WebSocketChannelEvent, WebSocketFrame }
+import zio.http.{ ChannelEvent, Client, Http, Response }
 
 object WebSocketSimpleClient extends ZIOAppDefault {
 
-  // Setup client envs
-  val env = EventLoopGroup.auto() ++ ChannelFactory.auto ++ Scope.default
-
-  val url = "ws://localhost:8091/subscriptions"
+  val url = "ws://ws.vi-server.org/mirror"
 
   val httpSocket: Http[Any, Throwable, WebSocketChannelEvent, Unit] =
     Http
@@ -48,9 +42,9 @@ object WebSocketSimpleClient extends ZIOAppDefault {
           ZIO.succeed(println("Goodbye!")) *> ch.writeAndFlush(WebSocketFrame.close(1000))
       }
 
-  val app: ZIO[Any with EventLoopGroup with ChannelFactory with Scope, Throwable, Response] =
-    httpSocket.toSocketApp.connect(url)
+  val app: ZIO[Any with Client with Scope, Throwable, Response] =
+    httpSocket.toSocketApp.connect(url) *> ZIO.never
 
-  val run = app.provideLayer(env)
+  val run = app.provide(Client.default, Scope.default)
 
 }
