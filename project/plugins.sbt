@@ -1,7 +1,7 @@
 //addSbtPlugin("ch.epfl.lamp"      % "sbt-dotty"       % "0.5.3")
 addSbtPlugin("com.dwijnand"      % "sbt-dynver"      % "4.1.1")
 addSbtPlugin("com.dwijnand"      % "sbt-travisci"    % "1.2.0")
-addSbtPlugin("de.heikoseeberger" % "sbt-header"      % "5.7.0")
+addSbtPlugin("de.heikoseeberger" % "sbt-header"      % "5.9.0")
 addSbtPlugin("org.scalameta"     % "sbt-scalafmt"    % "2.4.6")
 //addSbtPlugin("org.wartremover"   % "sbt-wartremover" % "2.4.13")
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "2.0.0")
