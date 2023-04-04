@@ -88,7 +88,7 @@ lazy val library =
     val zioPrelude = "dev.zio" %% "zio-prelude"   % Version.zioPrelude
     val zioSchema = Seq("zio-schema", "zio-schema-derivation").map("dev.zio" %% _  % Version.zioSchema)
     val zioJson = "dev.zio" %% "zio-json" % Version.zioJson
-    val zioPrometheus = "dev.zio" %% "zio-metrics-prometheus" % "2.0.0"
+    val zioPrometheus = "dev.zio" %% "zio-metrics-prometheus" % "2.0.1"
     val jacksonDatabind = "com.fasterxml.jackson.core" % "jackson-databind" % "2.14.2"
   }
 
