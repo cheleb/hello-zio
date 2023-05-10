@@ -84,7 +84,7 @@ lazy val library =
     )
     val zioStream = "dev.zio" %% "zio-streams" % Version.zio
     val zioManaged = "dev.zio" %% "zio-managed" % Version.zio
-    val zioKafka = "dev.zio" %% "zio-kafka"   % "2.2"
+    val zioKafka = "dev.zio" %% "zio-kafka"   % "2.3.0"
     val zioPrelude = "dev.zio" %% "zio-prelude"   % Version.zioPrelude
     val zioSchema = Seq("zio-schema", "zio-schema-derivation").map("dev.zio" %% _  % Version.zioSchema)
     val zioJson = "dev.zio" %% "zio-json" % Version.zioJson
