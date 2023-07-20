@@ -16,11 +16,18 @@ inThisBuild(Seq(
 //     connectInput in run := true
 //   )
 // )
+ThisBuild / scalafixDependencies +=
+  "dev.cheleb" %% "zio-module-pattern" % "0.0.5"
 
 lazy val `hello-zio` =
   project
     .in(file("."))
     .enablePlugins(AutomateHeaderPlugin)
+    .settings(
+       semanticdbEnabled := true, // enable SemanticDB
+       semanticdbVersion := scalafixSemanticdb.revision,
+       scalafixOnCompile := true,
+    )
     .settings(settings)
 //    .settings(addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.2" cross CrossVersion.full),
 //      scalacOptions += "-P:kind-projector:underscore-placeholders",
@@ -62,12 +69,12 @@ lazy val library =
       val zio = "2.0.8"
       val zioHttp = "0.0.3"
       val zioSagaCore = "0.5.0"
-      val grpcVersion = "1.54.0"
+      val grpcVersion = "1.56.1"
       val zioConfig = "3.0.0-RC9"
       val zioSchema = "0.2.1"
       val zioJson = "0.3.0"
       val zioPrelude = "1.0.0-RC16"
-      val logback = "1.4.6"
+      val logback = "1.4.8"
 
     }
     val logback = "ch.qos.logback" % "logback-classic" % Version.logback

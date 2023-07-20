@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
-package hellozio
+package counter
 
-import zio._
-import zio.Console._
+import zio.*
 
-object Basic extends ZIOAppDefault {
+import hellostream.Accessible
 
-  private val helloworld = printLine("Hello World").once
+@Accessible
+trait Counter {
+  def inc: UIO[Unit]
+  def dec: UIO[Unit]
+}
+class CounterImpl2 extends Counter {
+  def dec: UIO[Unit] = ???
+  def inc: UIO[Unit] = ???
+}
 
-  override def run: ZIO[Environment with ZIOAppArgs with Scope, Any, Any] =
-    helloworld
-      *> helloworld
-      *> printLine(".")
-
+object Counter {
+  def inc: URIO[Counter, Unit] = ZIO.serviceWithZIO[Counter](_.inc)
+  def dec: URIO[Counter, Unit] = ZIO.serviceWithZIO[Counter](_.dec)
 }
