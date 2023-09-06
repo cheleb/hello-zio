@@ -1,7 +1,7 @@
 
 
 inThisBuild(Seq(
-  scalaVersion := "3.3.0",
+  scalaVersion := "3.3.1",
   run / fork := true
 ))
 
@@ -69,12 +69,12 @@ lazy val library =
       val zio = "2.0.8"
       val zioHttp = "0.0.3"
       val zioSagaCore = "0.5.0"
-      val grpcVersion = "1.56.1"
+      val grpcVersion = "1.57.2"
       val zioConfig = "3.0.0-RC9"
       val zioSchema = "0.2.1"
       val zioJson = "0.3.0"
       val zioPrelude = "1.0.0-RC16"
-      val logback = "1.4.8"
+      val logback = "1.4.11"
 
     }
     val logback = "ch.qos.logback" % "logback-classic" % Version.logback

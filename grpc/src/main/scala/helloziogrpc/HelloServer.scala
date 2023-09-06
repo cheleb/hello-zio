@@ -16,7 +16,9 @@
 
 package helloziogrpc
 
+import io.grpc.Context
 import io.grpc.Status
+import io.grpc.StatusException
 import scalapb.zio_grpc.ServerMain
 import scalapb.zio_grpc.ServiceList
 import zio._
@@ -27,8 +29,9 @@ import io.grpc.examples.helloworld.helloworld.{ HelloReply, HelloRequest }
 
 object GreeterImpl extends ZGreeter[Any] {
   def sayHello(
-      request: HelloRequest
-  ): ZIO[Any, Status, HelloReply] =
+      request: HelloRequest,
+      context: Any
+  ): IO[StatusException, HelloReply] =
     ZIO.scoped {
       printLine(s"Got request: ${request.name}").orDie *>
       ZIO.sleep(1.second).repeatN(100).withFinalizer(_ => ZIO.debug("Arg..")) *>

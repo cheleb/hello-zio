@@ -14,22 +14,20 @@
  * limitations under the License.
  */
 
-package zionomicon.chap03
+package hellozio
 
-import zio.test._
-import zio.test.Assertion._
+import zio.*
 
-import zionomicon.chap3.ConsoleApp
+object RefDemo extends ZIOAppDefault {
 
-object ConsoleAppSpec extends ZIOSpecDefault {
-  def spec =
-    suite("ConsoleApp Spec")(
-      test("Greet say hi")(
-        for {
-          _      <- TestConsole.feedLines("Zozo")
-          _      <- ConsoleApp.greet
-          answer <- TestConsole.output
-        } yield assert(answer)(equalTo(Vector(s"Who are you?\n", "Hi Zozo\n")))
-      )
-    )
+  private val program = for {
+    ref <- Ref.make(0)
+    _   <- ZIO.foreachPar(1 to 1000)(i => Console.printLine(i) *> ref.update(_ + 1))
+    v   <- ref.get
+
+    _ <- Console.printLine(s"Value: $v")
+  } yield ()
+
+  override def run: ZIO[Any & (ZIOAppArgs & Scope), Any, Any] = program
+
 }

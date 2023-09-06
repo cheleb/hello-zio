@@ -22,7 +22,6 @@ import io.grpc.ManagedChannelBuilder
 import zio.Console._
 import scalapb.zio_grpc.ZManagedChannel
 
-import io.grpc.examples.helloworld.helloworld.ZioHelloworld.GreeterClient
 import io.grpc.examples.helloworld.helloworld.HelloRequest
 import zio.ZIO
 import io.grpc.Status
@@ -30,6 +29,7 @@ import io.grpc.examples.helloworld.helloworld.Corpus
 import io.grpc.CallOptions
 import java.util.concurrent.TimeUnit
 import scalapb.zio_grpc.SafeMetadata
+import io.grpc.examples.helloworld.helloworld.ZioHelloworld.GreeterClient
 
 object ExampleClient extends zio.ZIOAppDefault {
 
@@ -38,17 +38,15 @@ object ExampleClient extends zio.ZIOAppDefault {
       ZManagedChannel(
         ManagedChannelBuilder.forAddress("localhost", 9000).usePlaintext()
       ),
-        options=ZIO.succeed(
-    CallOptions.DEFAULT.withDeadlineAfter(3000, TimeUnit.MILLISECONDS)),
-  headers=SafeMetadata.make
+      options = CallOptions.DEFAULT.withDeadlineAfter(3000, TimeUnit.MILLISECONDS)
+      // headers = ZIO.succeed(SafeMetadata.make)
     )
 
-  def myAppLogic: ZIO[GreeterClient, Status, Unit] =
+  def myAppLogic =
     for {
       r <- GreeterClient.sayHello(HelloRequest("World", Corpus.LOCAL))
       _ <- printLine(r.message).orDie
     } yield ()
 
-  override def run =
-    myAppLogic.provide(clientLayer)
+  override def run = myAppLogic.provide(clientLayer)
 }

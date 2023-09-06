@@ -21,11 +21,14 @@ import zio.Console._
 
 object Basic extends ZIOAppDefault {
 
-  private val helloworld = printLine("Hello World").once
+  final def once[R, E, A](self: ZIO[R, E, A])(implicit trace: Trace): UIO[ZIO[R, E, Unit]] =
+    Ref.make(true).map(ref => self.whenZIO(ref.getAndSet(false)).unit)
 
+  private val helloworld = once(printLine("Hello World") *> ZIO.sleep(1.second))
   override def run: ZIO[Environment with ZIOAppArgs with Scope, Any, Any] =
     helloworld
       *> helloworld
       *> printLine(".")
+      *> ZIO.sleep(4.second)
 
 }
