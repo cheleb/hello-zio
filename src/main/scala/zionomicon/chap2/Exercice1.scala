@@ -214,9 +214,9 @@ object NumberGuessing extends ZIOAppDefault {
   private val program: ZIO[Any, Throwable, Unit] = for {
     secret <- nextIntBounded(100)
     _      <- printLine("Guess a number?")
-    res    <- makeAGuess(secret).timeout(5.seconds)
+    res    <- makeAGuess(secret) // .timeout(5.seconds)
 
   } yield ()
 
-  override def run = program.disconnect.timeout(2.second)
+  override def run = program.disconnect // .timeout(2.second)
 }

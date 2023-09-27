@@ -2,7 +2,7 @@
 
 inThisBuild(Seq(
   scalaVersion := "3.3.1",
-  run / fork := true
+  run / fork := false
 ))
 
 // *****************************************************************************
@@ -66,7 +66,7 @@ lazy val `zio-grpc` = project.in(file("grpc"))
 lazy val library =
   new {
     object Version {
-      val zio = "2.0.8"
+      val zio = "2.0.17"
       val zioHttp = "0.0.3"
       val zioSagaCore = "0.5.0"
       val grpcVersion = "1.57.2"

@@ -30,7 +30,7 @@ object HappyEyeTest extends ZIOAppDefault {
       .flatMap(elapsed => printLine(s"$elapsed $msg").orDie)
 
   def printSleepPrint(msg: String, delay: Duration) =
-    log(s"START: $msg") *> ZIO.sleep(delay) *> log(s"END: $msg")
+    log(s"START: $msg") *> ZIO.sleep(delay) *> log(s"END: $msg") *> ZIO.succeed(msg)
 
   def printSleepFail(msg: String, delay: Duration) =
     log(s"START: $msg") *> ZIO.sleep(delay) *> log(s"FAIL: $msg") *> ZIO.fail(

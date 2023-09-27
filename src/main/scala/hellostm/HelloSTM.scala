@@ -25,7 +25,7 @@ object HelloSTM extends ZIOAppDefault {
     for {
       from <- TRef.makeCommit(1000)
       to   <- TRef.makeCommit(1000)
-      res  <- transfer(from, to, 100).ignore
+      res  <- transfer(from, to, 10000).ignore
       endz <- (from.get <*> to.get).commit
       (a, b) = endz
       _ <- Console.printLine(s"Balance is ($a, $b)  $res")
