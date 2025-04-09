@@ -78,7 +78,7 @@ lazy val library =
 
     }
     val logback = "ch.qos.logback" % "logback-classic" % Version.logback
-    val sttpTapirClient =   "com.softwaremill.sttp.client3" %% "async-http-client-backend-zio" % "3.8.16"
+    val sttpTapirClient =   "com.softwaremill.sttp.client3" %% "async-http-client-backend-zio" % "3.11.0"
     val zio        = "dev.zio"        %% "zio"            % Version.zio
     val zioHttp    = "dev.zio"         %% "zio-http"      % Version.zioHttp
     val zioTest    = "dev.zio"          %% "zio-test"     % Version.zio
