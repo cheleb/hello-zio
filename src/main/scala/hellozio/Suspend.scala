@@ -16,16 +16,18 @@
 
 package hellozio
 
-import zio._
-import zio.Console._
+import zio.*
 
-object Basic extends ZIOAppDefault {
+object Suspend extends ZIOAppDefault {
 
-  private val helloworld = printLine("Hello World") *> ZIO.sleep(1.second)
-  override def run: ZIO[Environment & ZIOAppArgs & Scope, Any, Any] =
-    helloworld
-      *> helloworld
-      *> printLine(".")
-      *> ZIO.sleep(4.second)
+  def sumZIO(a: Int): UIO[Int] =
+    if a == 0 then ZIO.succeed(0)
+    else
+      for
+        b <- sumZIO(a - 1)
+        c <- ZIO.succeed(a)
+      yield c + b
+
+  override def run = sumZIO(100000).map(println)
 
 }

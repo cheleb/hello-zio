@@ -41,7 +41,7 @@ object BasicStreaming extends ZIOAppDefault {
 case class Loco(streamer: MyZStreamer, cloudifier: Cloudifier)
 
 object Loco {
-  val live: ZLayer[MyZStreamer with Cloudifier, Nothing, Loco] =
+  val live: ZLayer[MyZStreamer & Cloudifier, Nothing, Loco] =
     ZLayer.fromFunction((a, b) => Loco(a, b))
 }
 

@@ -16,16 +16,13 @@
 
 package hellozio
 
-import zio._
-import zio.Console._
+import zio.*
 
-object Basic extends ZIOAppDefault {
+object RuntimeDemo extends App:
 
-  private val helloworld = printLine("Hello World") *> ZIO.sleep(1.second)
-  override def run: ZIO[Environment & ZIOAppArgs & Scope, Any, Any] =
-    helloworld
-      *> helloworld
-      *> printLine(".")
-      *> ZIO.sleep(4.second)
+  val meaningOfLife: ZIO[Any, Nothing, Int] = ZIO.succeed(42)
 
-}
+  Unsafe.unsafe { implicit u =>
+    val mol = Runtime.default.unsafe.run(meaningOfLife)
+    println(mol)
+  }

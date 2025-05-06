@@ -42,7 +42,7 @@ object ZIOTest extends ZIOAppDefault {
     _ <- anIO(2)
   } yield ()
 
-  override def run: ZIO[Environment with ZIOAppArgs with Scope, Any, Any] =
+  override def run: ZIO[Environment & ZIOAppArgs & Scope, Any, Any] =
     for {
       _ <- printLine("Start")
       _ <- program *> printLine(" ✅ 3")

@@ -29,7 +29,7 @@ object EnsuringSample extends ZIOAppDefault {
   override def run = myAppLogic
 
   private def deleteTempFile(file: File): ZIO[Any, Nothing, AnyVal] =
-    if (file.getName contentEquals "tmp.txt")
+    if (file.getName.contentEquals("tmp.txt"))
       (printLine(s"del ${file.getName}") *> ZIO.sleep(2 seconds) *> ZIO.attempt {
         file.delete()
       }).orDie

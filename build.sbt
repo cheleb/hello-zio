@@ -16,17 +16,17 @@ inThisBuild(Seq(
 //     connectInput in run := true
 //   )
 // )
-ThisBuild / scalafixDependencies +=
-  "dev.cheleb" %% "zio-module-pattern" % "0.0.5"
+// ThisBuild / scalafixDependencies +=
+//   "dev.cheleb" %% "zio-module-pattern" % "0.0.5"
 
 lazy val `hello-zio` =
   project
     .in(file("."))
     .enablePlugins(AutomateHeaderPlugin)
     .settings(
-       semanticdbEnabled := true, // enable SemanticDB
-       semanticdbVersion := scalafixSemanticdb.revision,
-       scalafixOnCompile := true,
+//       semanticdbEnabled := true, // enable SemanticDB
+//       semanticdbVersion := scalafixSemanticdb.revision,
+//       scalafixOnCompile := true,
     )
     .settings(settings)
 //    .settings(addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.2" cross CrossVersion.full),
@@ -120,7 +120,6 @@ lazy val commonSettings =
     scalacOptions ++= Seq(
       "-unchecked",
       "-deprecation",
-      "-language:_",
       "-encoding", "UTF-8"
     ),
     Compile / unmanagedSourceDirectories := Seq((Compile / scalaSource).value),
