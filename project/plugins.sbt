@@ -10,7 +10,7 @@ val zioGrpcVersion = "0.6.3"
 //val zioGrpcVersion = "0.6.0-test1+10-a37eeee2+20220206-1858-SNAPSHOT"
 
 //addSbtPlugin("com.thesamet" % "sbt-protoc" % "0.99.34")
-addSbtPlugin("com.thesamet" % "sbt-protoc" % "1.0.7")
+addSbtPlugin("com.thesamet" % "sbt-protoc" % "1.0.8")
 
 libraryDependencies += "com.thesamet.scalapb.zio-grpc" %% "zio-grpc-codegen" % zioGrpcVersion
 libraryDependencies += "com.thesamet.scalapb" %% "compilerplugin" % "0.11.19"
