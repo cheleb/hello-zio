@@ -4,7 +4,7 @@ addSbtPlugin("com.dwijnand"      % "sbt-travisci"    % "1.2.0")
 addSbtPlugin("de.heikoseeberger" % "sbt-header"      % "5.10.0")
 addSbtPlugin("org.scalameta"     % "sbt-scalafmt"    % "2.5.5")
 //addSbtPlugin("org.wartremover"   % "sbt-wartremover" % "2.4.13")
-addSbtPlugin("org.scoverage" % "sbt-scoverage" % "2.3.1")
+addSbtPlugin("org.scoverage" % "sbt-scoverage" % "2.4.0")
 
 val zioGrpcVersion = "0.6.3"
 //val zioGrpcVersion = "0.6.0-test1+10-a37eeee2+20220206-1858-SNAPSHOT"
