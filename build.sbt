@@ -1,7 +1,7 @@
 
 
 inThisBuild(Seq(
-  scalaVersion := "3.8.0",
+  scalaVersion := "3.8.1",
   run / fork := false
 ))
 
