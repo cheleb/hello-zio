@@ -6,7 +6,7 @@ addSbtPlugin("org.scalameta"     % "sbt-scalafmt"    % "2.6.2")
 //addSbtPlugin("org.wartremover"   % "sbt-wartremover" % "2.4.13")
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "2.4.4")
 
-val zioGrpcVersion = "0.6.3"
+val zioGrpcVersion = "0.6.4"
 //val zioGrpcVersion = "0.6.0-test1+10-a37eeee2+20220206-1858-SNAPSHOT"
 
 //addSbtPlugin("com.thesamet" % "sbt-protoc" % "0.99.34")
